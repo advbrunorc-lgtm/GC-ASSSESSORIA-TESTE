@@ -1,11 +1,10 @@
-<!doctype html>
+ <!doctype html>
 <html lang="pt-br">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>LP Assessoria Prev</title>
 
-  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#111827">
 
@@ -19,7 +18,6 @@
     button{padding:12px 14px;border:0;border-radius:12px;cursor:pointer;font-weight:800;background:#111827;color:#fff;margin-top:12px;width:100%}
     .muted{color:#555;font-size:14px}
     #status{margin-top:10px;font-weight:800}
-    .warn{color:#b00020;font-weight:800}
   </style>
 </head>
 <body>
@@ -38,34 +36,62 @@
         <input id="clienteCpf" inputmode="numeric" placeholder="Pode digitar com pontos/traço" required>
       </div>
       <div>
-        <label>RG</label>
-        <input id="clienteRg">
+        <label>RG (opcional)</label>
+        <input id="clienteRg" placeholder="Se tiver, preencher">
       </div>
     </div>
 
     <div class="row">
       <div>
-        <label>Estado civil *</label>
-        <input id="clienteEstadoCivil" required>
+        <label>Nacionalidade *</label>
+        <input id="clienteNacionalidade" value="Brasileira" required>
       </div>
       <div>
-        <label>Profissão</label>
+        <label>Profissão (opcional)</label>
         <input id="clienteProfissao">
       </div>
     </div>
 
+    <label>Estado civil (opcional)</label>
+    <select id="clienteEstadoCivil">
+      <option value="">Selecione...</option>
+      <option>SOLTEIRO(A)</option>
+      <option>CASADO(A)</option>
+      <option>VIÚVO(A)</option>
+      <option>CONVIVE EM UNIÃO ESTÁVEL</option>
+      <option>DIVORCIADO(A)</option>
+    </select>
+
     <label>Endereço completo *</label>
     <textarea id="clienteEndereco" rows="3" required></textarea>
+
+    <label>UF (Estado) *</label>
+    <select id="clienteUF" required>
+      <option value="MT" selected>MT</option>
+      <option value="GO">GO</option>
+      <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option>
+      <option>CE</option><option>DF</option><option>ES</option><option>MA</option><option>MS</option>
+      <option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option>
+      <option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option>
+      <option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
+    </select>
   </div>
 
   <div class="card">
-    <h2>Controle interno (NÃO sai no contrato/procuração)</h2>
+    <h2>Controle interno (Planilha)</h2>
 
     <div class="row">
       <div>
-        <label>Telefone do cliente</label>
-        <input id="clienteTelefone" inputmode="tel" placeholder="(65) 9xxxx-xxxx">
+        <label>Telefone do cliente *</label>
+        <input id="clienteTelefone" inputmode="tel" placeholder="(65) 9xxxx-xxxx" required>
       </div>
+      <div>
+        <label>Senha GOV *</label>
+        <input id="govSenha" type="password" placeholder="Senha do GOV" required>
+      </div>
+    </div>
+
+    <div class="row">
       <div>
         <label>Está trabalhando?</label>
         <select id="estaTrabalhando">
@@ -74,9 +100,6 @@
           <option value="NÃO">NÃO</option>
         </select>
       </div>
-    </div>
-
-    <div class="row">
       <div>
         <label>Tem qualidade de segurado?</label>
         <select id="qualidadeSegurado">
@@ -86,21 +109,20 @@
           <option value="NÃO SEI / A APURAR">NÃO SEI / A APURAR</option>
         </select>
       </div>
-      <div>
-        <label>Especialidade médica / Doença</label>
-        <select id="especialidadeMedica">
-          <option value="">Selecione...</option>
-          <option value="NEUROLÓGICA">NEUROLÓGICA</option>
-          <option value="PSIQUIÁTRICA">PSIQUIÁTRICA</option>
-          <option value="ORTOPÉDICA">ORTOPÉDICA</option>
-          <option value="CÂNCER">CÂNCER</option>
-          <option value="DOENÇA DEGENERATIVA">DOENÇA DEGENERATIVA</option>
-          <option value="VISUAL">VISUAL</option>
-          <option value="AUTOIMUNE">AUTOIMUNE</option>
-          <option value="OUTRA">OUTRA</option>
-        </select>
-      </div>
     </div>
+
+    <label>Especialidade médica / Doença</label>
+    <select id="especialidadeMedica">
+      <option value="">Selecione...</option>
+      <option value="NEUROLÓGICA">NEUROLÓGICA</option>
+      <option value="PSIQUIÁTRICA">PSIQUIÁTRICA</option>
+      <option value="ORTOPÉDICA">ORTOPÉDICA</option>
+      <option value="CÂNCER">CÂNCER</option>
+      <option value="DOENÇA DEGENERATIVA">DOENÇA DEGENERATIVA</option>
+      <option value="VISUAL">VISUAL</option>
+      <option value="AUTOIMUNE">AUTOIMUNE</option>
+      <option value="OUTRA">OUTRA</option>
+    </select>
 
     <label>Detalhe/observação da doença (opcional)</label>
     <textarea id="doencaObservacao" rows="2" placeholder="Ex.: CID, sintomas, limitações, histórico..."></textarea>
@@ -131,39 +153,16 @@
       </div>
     </div>
 
-    <div class="row">
-      <div>
-        <label>Se NÃO tem laudo, cliente vai pagar laudo?</label>
-        <select id="vaiPagarLaudo">
-          <option value="">Selecione...</option>
-          <option value="SIM">SIM</option>
-          <option value="NÃO">NÃO</option>
-        </select>
-      </div>
-      <div></div>
-    </div>
-
-    <div class="row">
-      <div>
-        <label>Login GOV (CPF ou e-mail)</label>
-        <input id="govLogin" placeholder="ex.: CPF ou email">
-      </div>
-      <div>
-        <label>Salvar SENHA GOV na planilha?</label>
-        <select id="salvarSenhaGov">
-          <option value="NÃO" selected>NÃO (recomendado)</option>
-          <option value="SIM">SIM</option>
-        </select>
-        <div class="muted warn">Recomendação: não armazenar senha em planilha.</div>
-      </div>
-    </div>
-
-    <label>Senha GOV (somente se você escolher SIM acima)</label>
-    <input id="govSenha" type="password" placeholder="Senha GOV" autocomplete="new-password">
+    <label>Se NÃO tem laudo, cliente vai pagar o laudo?</label>
+    <select id="vaiPagarLaudo">
+      <option value="">Selecione...</option>
+      <option value="SIM">SIM</option>
+      <option value="NÃO">NÃO</option>
+    </select>
   </div>
 
   <div class="card">
-    <h2>Contrato</h2>
+    <h2>Contrato / Procuração</h2>
 
     <label>Tipo de benefício *</label>
     <select id="beneficio" required>
@@ -177,7 +176,16 @@
       <option>Salário-maternidade</option>
     </select>
 
-    <div id="camposHonorarios"></div>
+    <div class="row">
+      <div>
+        <label>Assinatura a rogo?</label>
+        <select id="assinaturaARogo">
+          <option value="NÃO" selected>NÃO</option>
+          <option value="SIM">SIM</option>
+        </select>
+      </div>
+      <div></div>
+    </div>
 
     <div class="row">
       <div>
@@ -195,167 +203,69 @@
   </div>
 
 <script>
-  // ✅ URL NOVA DO SEU APPS SCRIPT (WEB APP)
+  // ✅ SUA URL NOVA DO WEB APP
   const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzHXgfstJeOxUQN9AKlp3TEjGIyTzrIspE_YpLkMJrAvDplCJy5fSt-UyWYCE_VMWNr/exec";
-
-  // TOKEN (o mesmo do Apps Script)
   const TOKEN = "BRUNO-SEGURANCA-2026";
 
-  // Service Worker (PWA)
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js").catch(()=>{});
   }
 
   function $(id){ return document.getElementById(id); }
   function onlyDigits(s){ return String(s||"").replace(/\D+/g,""); }
-
-  function regra(b){
-    b=(b||"").toLowerCase();
-    if (b.includes("incapacidade tempor")) return "REGRA_1";
-    if (b.includes("salário") || b.includes("matern")) return "REGRA_3";
-    return "REGRA_2";
-  }
-
   function todayISO(){
     const d=new Date(); const p=n=>String(n).padStart(2,"0");
     return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
   }
-
   function brDateFromISO(iso){
     const [y,m,d]=String(iso||"").split("-");
     return `${d}/${m}/${y}`;
   }
-
   function setStatus(msg, ok){
     const el=$("status");
     el.style.color = ok ? "#0a7b34" : "#b00020";
     el.textContent = msg;
   }
-
   function valReq(id, label){
     const v = ($(id).value || "").trim();
     if(!v) throw new Error("Preencha: " + label);
     return v;
   }
 
-  function renderHonorarios(){
-    const b = $("beneficio").value;
-    const box = $("camposHonorarios");
-    if(!b){ box.innerHTML=""; return; }
-
-    const r = regra(b);
-    if(r==="REGRA_1"){
-      box.innerHTML = `
-        <h3>Honorários (Regra 1)</h3>
-        <div class="row">
-          <div><label>% inicial *</label><input id="percInicial" type="number" value="30" required></div>
-          <div><label>Nº parcelas iniciais *</label><input id="numParcelasIniciais" type="number" value="8" required></div>
-        </div>
-        <label>% prorrogação *</label>
-        <input id="percProrrogacao" type="number" value="30" required>
-        <p class="muted">Prorrogação: cobrança intercalada (padrão).</p>
-      `;
-      return;
-    }
-
-    if(r==="REGRA_3"){
-      box.innerHTML = `
-        <h3>Honorários (Regra 3)</h3>
-        <div class="row">
-          <div><label>% *</label><input id="percMaternidade" type="number" value="30" required></div>
-          <div><label>Nº de parcelas *</label><input id="numParcelasMaternidade" type="number" value="4" required></div>
-        </div>
-      `;
-      return;
-    }
-
-    box.innerHTML = `
-      <h3>Honorários (Regra 2)</h3>
-      <div class="row">
-        <div><label>% sobre retroativo *</label><input id="percRetroativo" type="number" value="45" required></div>
-        <div><label>Nº primeiras parcelas integrais *</label><input id="numPrimeirasParcelasIntegrais" type="number" value="6" required></div>
-      </div>
-      <label>Parcelamento?</label>
-      <select id="parcelamentoAtivado">
-        <option value="false" selected>Não</option>
-        <option value="true">Sim</option>
-      </select>
-      <div id="parcelamentoBox"></div>
-    `;
-    $("parcelamentoAtivado").addEventListener("change", renderParcelamento);
-    renderParcelamento();
-  }
-
-  function renderParcelamento(){
-    const on = $("parcelamentoAtivado").value === "true";
-    const box = $("parcelamentoBox");
-    if(!on){ box.innerHTML=""; return; }
-    box.innerHTML = `
-      <div class="row">
-        <div><label>Nº máximo de parcelas *</label><input id="maxParcelasPagamento" type="number" value="12" required></div>
-        <div><label>% mínimo de cada parcela *</label><input id="percMinimoParcela" type="number" value="50" required></div>
-      </div>
-    `;
-  }
-
   async function gerar(){
     try{
       setStatus("Enviando...", true);
 
-      const beneficio = valReq("beneficio","Tipo de benefício");
-
-      const salvarSenha = ($("salvarSenhaGov").value === "SIM");
-      const govSenha = salvarSenha ? (($("govSenha").value||"").trim()) : "";
-
       const payload = {
         token: TOKEN,
 
-        // dados documentos
+        // documentos
         clienteNome: valReq("clienteNome","Nome completo"),
         clienteCpf: onlyDigits(valReq("clienteCpf","CPF")),
         clienteRg: ($("clienteRg").value||"").trim(),
-        clienteEstadoCivil: valReq("clienteEstadoCivil","Estado civil"),
+        clienteNacionalidade: valReq("clienteNacionalidade","Nacionalidade"),
         clienteProfissao: ($("clienteProfissao").value||"").trim(),
-        clienteEndereco: valReq("clienteEndereco","Endereço completo"),
+        clienteEstadoCivil: ($("clienteEstadoCivil").value||"").trim(),
+        clienteEndereco: valReq("clienteEndereco","Endereço"),
+        clienteUF: valReq("clienteUF","UF"),
 
-        // internos (não aparecem nos docs)
-        clienteTelefone: ($("clienteTelefone").value||"").trim(),
+        beneficio: valReq("beneficio","Tipo de benefício"),
+        assinaturaARogo: ($("assinaturaARogo").value || "NÃO"),
+
+        local: valReq("local","Local"),
+        data: brDateFromISO(valReq("data","Data")),
+
+        // planilha (interno)
+        clienteTelefone: valReq("clienteTelefone","Telefone"),
+        govSenha: valReq("govSenha","Senha GOV"),
         especialidadeMedica: ($("especialidadeMedica").value||"").trim(),
         doencaObservacao: ($("doencaObservacao").value||"").trim(),
         possuiLaudo: ($("possuiLaudo").value||"").trim(),
         tempoLaudo: ($("tempoLaudo").value||"").trim(),
         vaiPagarLaudo: ($("vaiPagarLaudo").value||"").trim(),
-        govLogin: ($("govLogin").value||"").trim(),
-        salvarSenhaGov: salvarSenha ? "SIM" : "NÃO",
-        govSenha: govSenha,
         qualidadeSegurado: ($("qualidadeSegurado").value||"").trim(),
         estaTrabalhando: ($("estaTrabalhando").value||"").trim(),
-
-        // contrato
-        beneficio,
-        local: valReq("local","Local"),
-        data: brDateFromISO(valReq("data","Data")),
       };
-
-      const r = regra(beneficio);
-
-      if(r==="REGRA_1"){
-        payload.percInicial = Number(valReq("percInicial","% inicial"));
-        payload.numParcelasIniciais = Number(valReq("numParcelasIniciais","Nº parcelas iniciais"));
-        payload.percProrrogacao = Number(valReq("percProrrogacao","% prorrogação"));
-        payload.modalidadeIntercalada = true;
-      } else if(r==="REGRA_3"){
-        payload.percMaternidade = Number(valReq("percMaternidade","% maternidade"));
-        payload.numParcelasMaternidade = Number(valReq("numParcelasMaternidade","Nº parcelas maternidade"));
-      } else {
-        payload.percRetroativo = Number(valReq("percRetroativo","% retroativo"));
-        payload.numPrimeirasParcelasIntegrais = Number(valReq("numPrimeirasParcelasIntegrais","Nº primeiras parcelas integrais"));
-        payload.parcelamentoAtivado = $("parcelamentoAtivado").value === "true";
-        if(payload.parcelamentoAtivado){
-          payload.maxParcelasPagamento = Number(valReq("maxParcelasPagamento","Nº máximo de parcelas"));
-          payload.percMinimoParcela = Number(valReq("percMinimoParcela","% mínimo por parcela"));
-        }
-      }
 
       await fetch(WEBAPP_URL, {
         method: "POST",
@@ -372,7 +282,6 @@
 
   document.addEventListener("DOMContentLoaded", ()=>{
     $("data").value = todayISO();
-    $("beneficio").addEventListener("change", renderHonorarios);
     $("btnGerar").addEventListener("click", (e)=>{ e.preventDefault(); gerar(); });
   });
 </script>
