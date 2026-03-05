@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>LP Assessoria Prev</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<style>
+
+body{
+font-family:Arial;
+padding:20px;
+max-width:600px;
+margin:auto;
+}
+
+input,select,button{
+width:100%;
+padding:10px;
+margin:5px 0;
+font-size:16px;
+}
+
+button{
+background:#1a73e8;
+color:white;
+border:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Cadastro de Cliente</h2>
+
+<input id="nome" placeholder="Nome completo">
+
+<input id="cpf" placeholder="CPF">
+
+<input id="rg" placeholder="RG">
+
+<input id="estadoCivil" placeholder="Estado civil">
+
+<input id="endereco" placeholder="Endereço completo">
+
+<select id="beneficio">
+
+<option>Aposentadoria</option>
+<option>Benefício por incapacidade temporária</option>
+<option>BPC</option>
+<option>Auxílio acidente</option>
+<option>Pensão por morte</option>
+<option>Salário maternidade</option>
+
+</select>
+
+<h3>Honorários</h3>
+
+<input id="retroativo" placeholder="% sobre retroativo">
+
+<input id="parcelas" placeholder="Número de parcelas integrais">
+
+<input id="local" placeholder="Local">
+
+<input id="data" placeholder="Data">
+
+<button onclick="enviar()">GERAR DOCUMENTOS</button>
+
+<script>
+
+const API="https://script.google.com/macros/s/AKfycbw1Vcx5RkUbU18HGsgn409YyUVpOFFc8V_F516KoR4a6_K1OUhqXTEpdT-WYeSRtTIB/exec"
+
+function enviar(){
+
+const dados={
+
+token:"BRUNO-SEGURANCA-2026",
+
+clienteNome:document.getElementById("nome").value,
+clienteCpf:document.getElementById("cpf").value,
+clienteRg:document.getElementById("rg").value,
+clienteEstadoCivil:document.getElementById("estadoCivil").value,
+clienteEndereco:document.getElementById("endereco").value,
+
+beneficio:document.getElementById("beneficio").value,
+
+percRetroativo:document.getElementById("retroativo").value,
+numPrimeirasParcelasIntegrais:document.getElementById("parcelas").value,
+
+local:document.getElementById("local").value,
+data:document.getElementById("data").value
+
+}
+
+fetch(API,{
+method:"POST",
+mode:"no-cors",
+body:JSON.stringify(dados)
+})
+
+alert("Solicitação enviada! Aguarde alguns segundos e verifique o Drive.")
+
+}
+
+</script>
+
+</body>
+</html>
