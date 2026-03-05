@@ -16,16 +16,25 @@
     .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media(max-width:720px){.row{grid-template-columns:1fr}}
     button{padding:12px 14px;border:0;border-radius:12px;cursor:pointer;font-weight:800;background:#111827;color:#fff;margin-top:12px;width:100%}
-    .btn2{background:#0a7b34}
     .muted{color:#555;font-size:14px}
     #status{margin-top:10px;font-weight:800}
     .box{background:#f7f7f7;border:1px solid #e1e1e1;border-radius:12px;padding:12px;margin-top:10px}
     .k{font-weight:800}
+    .check{display:flex;gap:10px;align-items:center;margin-top:10px}
+    .check input{width:auto;margin:0}
   </style>
 </head>
 <body>
   <h1>LP Assessoria Prev</h1>
-  <p class="muted">Gera <b>Contrato</b> e <b>Procuração</b> em PDF no Drive + registra dados na planilha.</p>
+  <p class="muted">Salva dados na planilha e (se escolhido) gera Contrato + Procuração em PDF no Drive.</p>
+
+  <div class="card">
+    <h2>Modo</h2>
+    <div class="check">
+      <input id="apenasCadastro" type="checkbox">
+      <label for="apenasCadastro" style="margin:0">APENAS CADASTRO (não gera pasta/PDFs — só planilha)</label>
+    </div>
+  </div>
 
   <div class="card">
     <h2>Dados do Cliente (Documentos)</h2>
@@ -89,8 +98,8 @@
         <input id="clienteTelefone" inputmode="tel" placeholder="(65) 9xxxx-xxxx" required>
       </div>
       <div>
-        <label>Senha GOV *</label>
-        <input id="govSenha" type="password" required>
+        <label>Acesso GOV *</label>
+        <input id="govAcesso" placeholder="Senha / acesso do GOV" required>
       </div>
     </div>
 
@@ -203,9 +212,7 @@
       </div>
     </div>
 
-    <button id="btnGerar">GERAR PDFs E SALVAR</button>
-    <button id="btnAbrirPasta" class="btn2" type="button">ABRIR PASTA DESTE CLIENTE</button>
-
+    <button id="btnSalvar">SALVAR</button>
     <div id="status"></div>
   </div>
 
@@ -215,17 +222,11 @@
     <input id="cpfBusca" inputmode="numeric" placeholder="Digite o CPF">
     <button id="btnBuscar" type="button">BUSCAR</button>
     <div id="resultadoBusca" class="box" style="display:none"></div>
-    <button id="btnAbrirPastaBusca" class="btn2" type="button" style="display:none">ABRIR PASTA DO CLIENTE ENCONTRADO</button>
   </div>
 
 <script>
-  // ✅ SUA URL NOVA
-  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxqUrs3u5v_ieu7FE_2AydzLS6AV9_8Jkm5hBKiHlMiAmlZ2nMrFr416zJZ38VgaMNR/exec";
+  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbznCaU1HqqG2gHWSQ9G5KfVgVodEIzJhgK8kqQEFCNnzvmT3RgJaX2PsPKhf2WwTjyX/exec";
   const TOKEN = "BRUNO-SEGURANCA-2026";
-
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js").catch(()=>{});
-  }
 
   function $(id){ return document.getElementById(id); }
   function onlyDigits(s){ return String(s||"").replace(/\D+/g,""); }
@@ -257,8 +258,14 @@
   }
 
   function renderHonorarios(){
-    const b = $("beneficio").value;
     const box = $("camposHonorarios");
+    const apenas = $("apenasCadastro").checked;
+    const b = $("beneficio").value;
+
+    if(apenas){
+      box.innerHTML = `<p class="muted">Modo APENAS CADASTRO ativado: honorários e documentos não serão gerados.</p>`;
+      return;
+    }
     if(!b){ box.innerHTML=""; return; }
 
     const r = regra(b);
@@ -272,7 +279,6 @@
         </div>
         <label>% prorrogação *</label>
         <input id="percProrrogacao" type="number" value="30" required>
-        <p class="muted">Prorrogação: cobrança intercalada (automática).</p>
       `;
       return;
     }
@@ -303,7 +309,6 @@
 
       <div id="parcelamentoBox"></div>
     `;
-
     $("parcelamentoAtivado").addEventListener("change", renderParcelamento);
     renderParcelamento();
   }
@@ -320,21 +325,17 @@
     `;
   }
 
-  function abrirPastaPorCpf(cpfDigits){
-    if(!cpfDigits){ alert("CPF vazio."); return; }
-    const url = `${WEBAPP_URL}?action=folder&cpf=${encodeURIComponent(cpfDigits)}`;
-    window.open(url, "_blank");
-  }
-
-  async function gerar(){
+  async function salvar(){
     try{
       setStatus("Enviando...", true);
 
+      const apenasCadastro = $("apenasCadastro").checked;
       const beneficio = valReq("beneficio","Tipo de benefício");
       const r = regra(beneficio);
 
       const payload = {
         token: TOKEN,
+        apenasCadastro,
 
         clienteNome: valReq("clienteNome","Nome completo"),
         clienteCpf: onlyDigits(valReq("clienteCpf","CPF")),
@@ -346,7 +347,7 @@
         clienteUF: valReq("clienteUF","UF"),
 
         clienteTelefone: valReq("clienteTelefone","Telefone"),
-        govSenha: valReq("govSenha","Senha GOV"),
+        govAcesso: valReq("govAcesso","Acesso GOV"),
         especialidadeMedica: ($("especialidadeMedica").value||"").trim(),
         doencaObservacao: ($("doencaObservacao").value||"").trim(),
         possuiLaudo: ($("possuiLaudo").value||"").trim(),
@@ -361,21 +362,22 @@
         data: brDateFromISO(valReq("data","Data")),
       };
 
-      // honorários
-      if(r==="REGRA_1"){
-        payload.percInicial = Number(valReq("percInicial","% inicial"));
-        payload.numParcelasIniciais = Number(valReq("numParcelasIniciais","Nº parcelas iniciais"));
-        payload.percProrrogacao = Number(valReq("percProrrogacao","% prorrogação"));
-      } else if(r==="REGRA_3"){
-        payload.percMaternidade = Number(valReq("percMaternidade","% maternidade"));
-        payload.numParcelasMaternidade = Number(valReq("numParcelasMaternidade","Nº parcelas maternidade"));
-      } else {
-        payload.percRetroativo = Number(valReq("percRetroativo","% retroativo"));
-        payload.numPrimeirasParcelasIntegrais = Number(valReq("numPrimeirasParcelasIntegrais","Nº parcelas integrais"));
-        payload.parcelamentoAtivado = ($("parcelamentoAtivado").value === "true");
-        if(payload.parcelamentoAtivado){
-          payload.maxParcelasPagamento = Number(valReq("maxParcelasPagamento","Nº máximo parcelas"));
-          payload.percMinimoParcela = Number(valReq("percMinimoParcela","% mínimo parcela"));
+      if(!apenasCadastro){
+        if(r==="REGRA_1"){
+          payload.percInicial = Number(valReq("percInicial","% inicial"));
+          payload.numParcelasIniciais = Number(valReq("numParcelasIniciais","Nº parcelas iniciais"));
+          payload.percProrrogacao = Number(valReq("percProrrogacao","% prorrogação"));
+        } else if(r==="REGRA_3"){
+          payload.percMaternidade = Number(valReq("percMaternidade","% maternidade"));
+          payload.numParcelasMaternidade = Number(valReq("numParcelasMaternidade","Nº parcelas maternidade"));
+        } else {
+          payload.percRetroativo = Number(valReq("percRetroativo","% retroativo"));
+          payload.numPrimeirasParcelasIntegrais = Number(valReq("numPrimeirasParcelasIntegrais","Nº parcelas integrais"));
+          payload.parcelamentoAtivado = ($("parcelamentoAtivado").value === "true");
+          if(payload.parcelamentoAtivado){
+            payload.maxParcelasPagamento = Number(valReq("maxParcelasPagamento","Nº máximo parcelas"));
+            payload.percMinimoParcela = Number(valReq("percMinimoParcela","% mínimo parcela"));
+          }
         }
       }
 
@@ -386,14 +388,15 @@
         body: JSON.stringify(payload)
       });
 
-      setStatus("Enviado! Aguarde 10–20s e confira Drive + Planilha. Depois, use 'Abrir pasta'.", true);
+      setStatus(apenasCadastro
+        ? "✅ Cadastro salvo na planilha (sem documentos)."
+        : "✅ Enviado! Aguarde 10–20s e confira Drive + Planilha.", true);
 
     } catch(err){
       setStatus("Erro: " + (err.message || err), false);
     }
   }
 
-  // JSONP buscar CPF
   function jsonp(url, cbName){
     return new Promise((resolve, reject)=>{
       const script = document.createElement("script");
@@ -424,25 +427,20 @@
     const cpf = onlyDigits(($("cpfBusca").value||"").trim());
     if(!cpf){ alert("Digite um CPF."); return; }
 
-    $("resultadoBusca").style.display = "none";
-    $("btnAbrirPastaBusca").style.display = "none";
+    $("resultadoBusca").style.display = "block";
+    $("resultadoBusca").innerHTML = "Buscando...";
 
     const cbName = "cb_" + Math.random().toString(36).slice(2);
     const url = `${WEBAPP_URL}?action=lookup&cpf=${encodeURIComponent(cpf)}&callback=${encodeURIComponent(cbName)}`;
 
     try{
       const r = await jsonp(url, cbName);
-
-      $("resultadoBusca").style.display = "block";
-
       if(!r || !r.ok){
         $("resultadoBusca").innerHTML = "Erro: " + (r && r.error ? r.error : "desconhecido");
         return;
       }
       if(!r.found){
         $("resultadoBusca").innerHTML = "Cliente não encontrado na planilha para esse CPF.";
-        $("btnAbrirPastaBusca").style.display = "block";
-        $("btnAbrirPastaBusca").onclick = ()=> abrirPastaPorCpf(cpf);
         return;
       }
 
@@ -451,15 +449,20 @@
         <div><span class="k">Nome:</span> ${d.Nome||""}</div>
         <div><span class="k">CPF:</span> ${d.CPF||""}</div>
         <div><span class="k">Telefone:</span> ${d.Telefone||""}</div>
+        <div><span class="k">Endereço:</span> ${d.Endereco||""}</div>
         <div><span class="k">UF:</span> ${d.UF||""}</div>
+        <div><span class="k">Acesso GOV:</span> ${d.AcessoGOV||""}</div>
         <div><span class="k">Benefício:</span> ${d.Beneficio||""}</div>
+        <div><span class="k">Especialidade:</span> ${d.EspecialidadeMedica||""}</div>
+        <div><span class="k">Obs. doença:</span> ${d.ObservacaoDoenca||""}</div>
+        <div><span class="k">Laudo:</span> ${d.PossuiLaudo||""} ${d.TempoLaudo ? "(" + d.TempoLaudo + ")" : ""}</div>
+        <div><span class="k">Vai pagar laudo:</span> ${d.VaiPagarLaudo||""}</div>
+        <div><span class="k">Qualidade segurado:</span> ${d.QualidadeSegurado||""}</div>
+        <div><span class="k">Trabalhando:</span> ${d.EstaTrabalhando||""}</div>
+        <div><span class="k">A rogo:</span> ${d.AssinaturaARogo||""}</div>
+        <div><span class="k">Modo:</span> ${d.ModoCadastro||""}</div>
       `;
-
-      $("btnAbrirPastaBusca").style.display = "block";
-      $("btnAbrirPastaBusca").onclick = ()=> abrirPastaPorCpf(cpf);
-
     } catch(err){
-      $("resultadoBusca").style.display = "block";
       $("resultadoBusca").innerHTML = "Erro: " + (err.message || err);
     }
   }
@@ -467,8 +470,8 @@
   document.addEventListener("DOMContentLoaded", ()=>{
     $("data").value = todayISO();
     $("beneficio").addEventListener("change", renderHonorarios);
-    $("btnGerar").addEventListener("click", (e)=>{ e.preventDefault(); gerar(); });
-    $("btnAbrirPasta").addEventListener("click", ()=> abrirPastaPorCpf(onlyDigits(($("clienteCpf").value||"").trim())) );
+    $("apenasCadastro").addEventListener("change", renderHonorarios);
+    $("btnSalvar").addEventListener("click", (e)=>{ e.preventDefault(); salvar(); });
     $("btnBuscar").addEventListener("click", buscarCpf);
   });
 </script>
