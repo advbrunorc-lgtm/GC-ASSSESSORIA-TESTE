@@ -221,7 +221,8 @@
   </div>
 
 <script>
-  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzpjnKMq3dF1nTwsNeNtzcIh6z2yxVwopoPtnAbgRBvS-9JoXaW1mFxodM6RXyZNJxW/exec";
+  // ✅ SUA URL CERTA (WEB APP /exec)
+  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxUbB2iMJ3FW4seXPldZKYhNtF9aq0ykG9YRNR9qOl6__9saKG-t8tZtbxfVxA13IbQ/exec";
   const TOKEN = "BRUNO-SEGURANCA-2026";
 
   if ("serviceWorker" in navigator) {
@@ -262,6 +263,7 @@
       const payload = {
         token: TOKEN,
 
+        // documentos
         clienteNome: valReq("clienteNome","Nome completo"),
         clienteCpf: onlyDigits(valReq("clienteCpf","CPF")),
         clienteRg: ($("clienteRg").value||"").trim(),
@@ -277,6 +279,7 @@
         local: valReq("local","Local"),
         data: brDateFromISO(valReq("data","Data")),
 
+        // planilha (interno)
         clienteTelefone: valReq("clienteTelefone","Telefone"),
         govSenha: valReq("govSenha","Senha GOV"),
         especialidadeMedica: ($("especialidadeMedica").value||"").trim(),
@@ -295,7 +298,7 @@
         body: JSON.stringify(payload)
       });
 
-      setStatus("Enviado! PDFs e planilha atualizados. (Você pode abrir a pasta no botão abaixo)", true);
+      setStatus("Enviado! PDFs e planilha atualizados. (Use o botão para abrir a pasta)", true);
 
     } catch(err){
       setStatus("Erro: " + (err.message || err), false);
@@ -352,7 +355,6 @@
       if(!r.found){
         $("resultadoBusca").style.display = "block";
         $("resultadoBusca").innerHTML = "Cliente não encontrado na planilha para esse CPF.";
-        // mesmo assim deixa abrir pasta (vai dizer se não existe)
         $("btnAbrirPastaBusca").style.display = "block";
         $("btnAbrirPastaBusca").onclick = ()=> abrirPastaPorCpf(cpf);
         return;
