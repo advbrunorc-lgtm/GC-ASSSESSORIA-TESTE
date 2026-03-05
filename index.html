@@ -1,4 +1,4 @@
- <!doctype html>
+<!doctype html>
 <html lang="pt-br">
 <head>
   <meta charset="utf-8" />
@@ -16,8 +16,11 @@
     .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media(max-width:720px){.row{grid-template-columns:1fr}}
     button{padding:12px 14px;border:0;border-radius:12px;cursor:pointer;font-weight:800;background:#111827;color:#fff;margin-top:12px;width:100%}
+    .btn2{background:#0a7b34}
     .muted{color:#555;font-size:14px}
     #status{margin-top:10px;font-weight:800}
+    .box{background:#f7f7f7;border:1px solid #e1e1e1;border-radius:12px;padding:12px;margin-top:10px}
+    .k{font-weight:800}
   </style>
 </head>
 <body>
@@ -199,12 +202,26 @@
     </div>
 
     <button id="btnGerar">GERAR PDFs E SALVAR</button>
+    <button id="btnAbrirPasta" class="btn2" type="button">ABRIR PASTA DESTE CLIENTE</button>
+
     <div id="status"></div>
   </div>
 
+  <div class="card">
+    <h2>Buscar cliente por CPF</h2>
+
+    <label>CPF para buscar</label>
+    <input id="cpfBusca" inputmode="numeric" placeholder="Digite o CPF">
+
+    <button id="btnBuscar" type="button">BUSCAR</button>
+
+    <div id="resultadoBusca" class="box" style="display:none"></div>
+
+    <button id="btnAbrirPastaBusca" class="btn2" type="button" style="display:none">ABRIR PASTA DO CLIENTE ENCONTRADO</button>
+  </div>
+
 <script>
-  // ✅ SUA URL NOVA DO WEB APP
-  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzHXgfstJeOxUQN9AKlp3TEjGIyTzrIspE_YpLkMJrAvDplCJy5fSt-UyWYCE_VMWNr/exec";
+  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzpjnKMq3dF1nTwsNeNtzcIh6z2yxVwopoPtnAbgRBvS-9JoXaW1mFxodM6RXyZNJxW/exec";
   const TOKEN = "BRUNO-SEGURANCA-2026";
 
   if ("serviceWorker" in navigator) {
@@ -232,6 +249,12 @@
     return v;
   }
 
+  function abrirPastaPorCpf(cpfDigits){
+    if(!cpfDigits){ alert("CPF vazio."); return; }
+    const url = `${WEBAPP_URL}?action=folder&cpf=${encodeURIComponent(cpfDigits)}`;
+    window.open(url, "_blank");
+  }
+
   async function gerar(){
     try{
       setStatus("Enviando...", true);
@@ -239,7 +262,6 @@
       const payload = {
         token: TOKEN,
 
-        // documentos
         clienteNome: valReq("clienteNome","Nome completo"),
         clienteCpf: onlyDigits(valReq("clienteCpf","CPF")),
         clienteRg: ($("clienteRg").value||"").trim(),
@@ -255,7 +277,6 @@
         local: valReq("local","Local"),
         data: brDateFromISO(valReq("data","Data")),
 
-        // planilha (interno)
         clienteTelefone: valReq("clienteTelefone","Telefone"),
         govSenha: valReq("govSenha","Senha GOV"),
         especialidadeMedica: ($("especialidadeMedica").value||"").trim(),
@@ -274,15 +295,100 @@
         body: JSON.stringify(payload)
       });
 
-      setStatus("Enviado! Aguarde 10–20 segundos e confira Drive + Planilha.", true);
+      setStatus("Enviado! PDFs e planilha atualizados. (Você pode abrir a pasta no botão abaixo)", true);
+
     } catch(err){
       setStatus("Erro: " + (err.message || err), false);
+    }
+  }
+
+  // JSONP para buscar CPF
+  function jsonp(url, cbName){
+    return new Promise((resolve, reject)=>{
+      const script = document.createElement("script");
+      const timeout = setTimeout(()=>{
+        script.remove();
+        reject(new Error("Tempo esgotado na busca."));
+      }, 12000);
+
+      window[cbName] = (data)=>{
+        clearTimeout(timeout);
+        script.remove();
+        delete window[cbName];
+        resolve(data);
+      };
+
+      script.src = url;
+      script.onerror = ()=>{
+        clearTimeout(timeout);
+        script.remove();
+        delete window[cbName];
+        reject(new Error("Falha ao buscar."));
+      };
+      document.body.appendChild(script);
+    });
+  }
+
+  async function buscarCpf(){
+    const cpf = onlyDigits(($("cpfBusca").value||"").trim());
+    if(!cpf){ alert("Digite um CPF."); return; }
+
+    $("resultadoBusca").style.display = "none";
+    $("btnAbrirPastaBusca").style.display = "none";
+    $("resultadoBusca").innerHTML = "Buscando...";
+
+    const cbName = "cb_" + Math.random().toString(36).slice(2);
+    const url = `${WEBAPP_URL}?action=lookup&cpf=${encodeURIComponent(cpf)}&callback=${encodeURIComponent(cbName)}`;
+
+    try{
+      const r = await jsonp(url, cbName);
+
+      if(!r || !r.ok){
+        $("resultadoBusca").style.display = "block";
+        $("resultadoBusca").innerHTML = "Erro: " + (r && r.error ? r.error : "desconhecido");
+        return;
+      }
+
+      if(!r.found){
+        $("resultadoBusca").style.display = "block";
+        $("resultadoBusca").innerHTML = "Cliente não encontrado na planilha para esse CPF.";
+        // mesmo assim deixa abrir pasta (vai dizer se não existe)
+        $("btnAbrirPastaBusca").style.display = "block";
+        $("btnAbrirPastaBusca").onclick = ()=> abrirPastaPorCpf(cpf);
+        return;
+      }
+
+      const d = r.data;
+      $("resultadoBusca").style.display = "block";
+      $("resultadoBusca").innerHTML = `
+        <div><span class="k">Nome:</span> ${d.Nome||""}</div>
+        <div><span class="k">CPF:</span> ${d.CPF||""}</div>
+        <div><span class="k">Telefone:</span> ${d.Telefone||""}</div>
+        <div><span class="k">UF:</span> ${d.UF||""}</div>
+        <div><span class="k">Benefício:</span> ${d.Beneficio||""}</div>
+        <div><span class="k">Especialidade:</span> ${d.EspecialidadeMedica||""}</div>
+        <div><span class="k">Obs. doença:</span> ${d.ObservacaoDoenca||""}</div>
+        <div><span class="k">Laudo:</span> ${d.PossuiLaudo||""} ${d.TempoLaudo ? "("+d.TempoLaudo+")" : ""}</div>
+        <div><span class="k">Vai pagar laudo:</span> ${d.VaiPagarLaudo||""}</div>
+        <div><span class="k">Qualidade segurado:</span> ${d.QualidadeSegurado||""}</div>
+        <div><span class="k">Trabalhando:</span> ${d.EstaTrabalhando||""}</div>
+        <div><span class="k">A rogo:</span> ${d.AssinaturaARogo||""}</div>
+      `;
+
+      $("btnAbrirPastaBusca").style.display = "block";
+      $("btnAbrirPastaBusca").onclick = ()=> abrirPastaPorCpf(cpf);
+
+    } catch(err){
+      $("resultadoBusca").style.display = "block";
+      $("resultadoBusca").innerHTML = "Erro: " + (err.message || err);
     }
   }
 
   document.addEventListener("DOMContentLoaded", ()=>{
     $("data").value = todayISO();
     $("btnGerar").addEventListener("click", (e)=>{ e.preventDefault(); gerar(); });
+    $("btnAbrirPasta").addEventListener("click", ()=> abrirPastaPorCpf(onlyDigits(($("clienteCpf").value||"").trim())) );
+    $("btnBuscar").addEventListener("click", buscarCpf);
   });
 </script>
 </body>
