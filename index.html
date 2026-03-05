@@ -3,9 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>LP Assessoria Prev - Formulário</title>
+  <title>LP Assessoria Prev</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#111827">
+
   <style>
-    body{font-family:system-ui,Arial;margin:16px;max-width:900px}
+    body{font-family:system-ui,Arial;margin:16px;max-width:980px}
     .card{border:1px solid #ddd;border-radius:14px;padding:14px;margin:12px 0}
     label{display:block;font-weight:700;margin-top:10px}
     input,select,textarea{width:100%;padding:10px;margin-top:6px;border:1px solid #ccc;border-radius:12px;font-size:16px}
@@ -14,14 +19,15 @@
     button{padding:12px 14px;border:0;border-radius:12px;cursor:pointer;font-weight:800;background:#111827;color:#fff;margin-top:12px;width:100%}
     .muted{color:#555;font-size:14px}
     #status{margin-top:10px;font-weight:800}
+    .warn{color:#b00020;font-weight:800}
   </style>
 </head>
 <body>
   <h1>LP Assessoria Prev</h1>
-  <p class="muted">Gera <b>Contrato</b> e <b>Procuração</b> em PDF no Drive + registra na planilha.</p>
+  <p class="muted">Gera <b>Contrato</b> e <b>Procuração</b> em PDF no Drive + registra dados na planilha.</p>
 
   <div class="card">
-    <h2>Dados do Cliente</h2>
+    <h2>Dados do Cliente (Documentos)</h2>
 
     <label>Nome completo *</label>
     <input id="clienteNome" autocomplete="name" required>
@@ -53,6 +59,110 @@
   </div>
 
   <div class="card">
+    <h2>Controle interno (NÃO sai no contrato/procuração)</h2>
+
+    <div class="row">
+      <div>
+        <label>Telefone do cliente</label>
+        <input id="clienteTelefone" inputmode="tel" placeholder="(65) 9xxxx-xxxx">
+      </div>
+      <div>
+        <label>Está trabalhando?</label>
+        <select id="estaTrabalhando">
+          <option value="">Selecione...</option>
+          <option value="SIM">SIM</option>
+          <option value="NÃO">NÃO</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Tem qualidade de segurado?</label>
+        <select id="qualidadeSegurado">
+          <option value="">Selecione...</option>
+          <option value="SIM">SIM</option>
+          <option value="NÃO">NÃO</option>
+          <option value="NÃO SEI / A APURAR">NÃO SEI / A APURAR</option>
+        </select>
+      </div>
+      <div>
+        <label>Especialidade médica / Doença</label>
+        <select id="especialidadeMedica">
+          <option value="">Selecione...</option>
+          <option value="NEUROLÓGICA">NEUROLÓGICA</option>
+          <option value="PSIQUIÁTRICA">PSIQUIÁTRICA</option>
+          <option value="ORTOPÉDICA">ORTOPÉDICA</option>
+          <option value="CÂNCER">CÂNCER</option>
+          <option value="DOENÇA DEGENERATIVA">DOENÇA DEGENERATIVA</option>
+          <option value="VISUAL">VISUAL</option>
+          <option value="AUTOIMUNE">AUTOIMUNE</option>
+          <option value="OUTRA">OUTRA</option>
+        </select>
+      </div>
+    </div>
+
+    <label>Detalhe/observação da doença (opcional)</label>
+    <textarea id="doencaObservacao" rows="2" placeholder="Ex.: CID, sintomas, limitações, histórico..."></textarea>
+
+    <div class="row">
+      <div>
+        <label>Possui laudo/atestado médico?</label>
+        <select id="possuiLaudo">
+          <option value="">Selecione...</option>
+          <option value="SIM">SIM</option>
+          <option value="NÃO">NÃO</option>
+        </select>
+      </div>
+      <div>
+        <label>Se SIM, tempo do laudo</label>
+        <select id="tempoLaudo">
+          <option value="">Selecione...</option>
+          <option value="PERMANENTE">PERMANENTE</option>
+          <option value="10 DIAS">10 DIAS</option>
+          <option value="20 DIAS">20 DIAS</option>
+          <option value="30 DIAS">30 DIAS</option>
+          <option value="60 DIAS">60 DIAS</option>
+          <option value="90 DIAS">90 DIAS</option>
+          <option value="120 DIAS">120 DIAS</option>
+          <option value="180 DIAS">180 DIAS</option>
+          <option value="OUTRO">OUTRO</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Se NÃO tem laudo, cliente vai pagar laudo?</label>
+        <select id="vaiPagarLaudo">
+          <option value="">Selecione...</option>
+          <option value="SIM">SIM</option>
+          <option value="NÃO">NÃO</option>
+        </select>
+      </div>
+      <div></div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Login GOV (CPF ou e-mail)</label>
+        <input id="govLogin" placeholder="ex.: CPF ou email">
+      </div>
+      <div>
+        <label>Salvar SENHA GOV na planilha?</label>
+        <select id="salvarSenhaGov">
+          <option value="NÃO" selected>NÃO (recomendado)</option>
+          <option value="SIM">SIM</option>
+        </select>
+        <div class="muted warn">Recomendação: não armazenar senha em planilha.</div>
+      </div>
+    </div>
+
+    <label>Senha GOV (somente se você escolher SIM acima)</label>
+    <input id="govSenha" type="password" placeholder="Senha GOV" autocomplete="new-password">
+  </div>
+
+  <div class="card">
     <h2>Contrato</h2>
 
     <label>Tipo de benefício *</label>
@@ -80,35 +190,47 @@
       </div>
     </div>
 
-    <button id="btnGerar">GERAR PDFs E SALVAR NO DRIVE</button>
+    <button id="btnGerar">GERAR PDFs E SALVAR</button>
     <div id="status"></div>
   </div>
 
 <script>
+  // URL DO SEU APPS SCRIPT (WEB APP)
   const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw1Vcx5RkUbU18HGsgn409YyUVpOFFc8V_F516KoR4a6_K1OUhqXTEpdT-WYeSRtTIB/exec";
+  // TOKEN (o mesmo do Apps Script)
   const TOKEN = "BRUNO-SEGURANCA-2026";
+
+  // Service Worker (PWA)
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js").catch(()=>{});
+  }
 
   function $(id){ return document.getElementById(id); }
   function onlyDigits(s){ return String(s||"").replace(/\D+/g,""); }
+
   function regra(b){
     b=(b||"").toLowerCase();
     if (b.includes("incapacidade tempor")) return "REGRA_1";
     if (b.includes("salário") || b.includes("matern")) return "REGRA_3";
     return "REGRA_2";
   }
+
   function todayISO(){
     const d=new Date(); const p=n=>String(n).padStart(2,"0");
     return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
   }
+
   function brDateFromISO(iso){
     const [y,m,d]=String(iso||"").split("-");
     return `${d}/${m}/${y}`;
   }
+
   function setStatus(msg, ok){
     const el=$("status");
     el.style.color = ok ? "#0a7b34" : "#b00020";
     el.textContent = msg;
   }
+
   function valReq(id, label){
     const v = ($(id).value || "").trim();
     if(!v) throw new Error("Preencha: " + label);
@@ -181,14 +303,34 @@
 
       const beneficio = valReq("beneficio","Tipo de benefício");
 
+      const salvarSenha = ($("salvarSenhaGov").value === "SIM");
+      const govSenha = salvarSenha ? (($("govSenha").value||"").trim()) : "";
+
       const payload = {
         token: TOKEN,
+
+        // dados documentos
         clienteNome: valReq("clienteNome","Nome completo"),
         clienteCpf: onlyDigits(valReq("clienteCpf","CPF")),
         clienteRg: ($("clienteRg").value||"").trim(),
         clienteEstadoCivil: valReq("clienteEstadoCivil","Estado civil"),
         clienteProfissao: ($("clienteProfissao").value||"").trim(),
         clienteEndereco: valReq("clienteEndereco","Endereço completo"),
+
+        // internos (não aparecem nos docs)
+        clienteTelefone: ($("clienteTelefone").value||"").trim(),
+        especialidadeMedica: ($("especialidadeMedica").value||"").trim(),
+        doencaObservacao: ($("doencaObservacao").value||"").trim(),
+        possuiLaudo: ($("possuiLaudo").value||"").trim(),
+        tempoLaudo: ($("tempoLaudo").value||"").trim(),
+        vaiPagarLaudo: ($("vaiPagarLaudo").value||"").trim(),
+        govLogin: ($("govLogin").value||"").trim(),
+        salvarSenhaGov: salvarSenha ? "SIM" : "NÃO",
+        govSenha: govSenha,
+        qualidadeSegurado: ($("qualidadeSegurado").value||"").trim(),
+        estaTrabalhando: ($("estaTrabalhando").value||"").trim(),
+
+        // contrato
         beneficio,
         local: valReq("local","Local"),
         data: brDateFromISO(valReq("data","Data")),
@@ -221,8 +363,7 @@
         body: JSON.stringify(payload)
       });
 
-      setStatus("Enviado! Aguarde 10–20 segundos e confira a pasta do cliente no Drive e a planilha.", true);
-
+      setStatus("Enviado! Aguarde 10–20 segundos e confira Drive + Planilha.", true);
     } catch(err){
       setStatus("Erro: " + (err.message || err), false);
     }
