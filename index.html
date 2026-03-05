@@ -4,41 +4,89 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>LP Assessoria Prev</title>
-
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#111827">
-
   <style>
     body{font-family:system-ui,Arial;margin:16px;max-width:980px}
     .card{border:1px solid #ddd;border-radius:14px;padding:14px;margin:12px 0}
-    label{display:block;font-weight:700;margin-top:10px}
+    label{display:block;font-weight:800;margin-top:10px}
     input,select,textarea{width:100%;padding:10px;margin-top:6px;border:1px solid #ccc;border-radius:12px;font-size:16px}
     .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media(max-width:720px){.row{grid-template-columns:1fr}}
-    button{padding:12px 14px;border:0;border-radius:12px;cursor:pointer;font-weight:800;background:#111827;color:#fff;margin-top:12px;width:100%}
+    button{padding:12px 14px;border:0;border-radius:12px;cursor:pointer;font-weight:900;background:#111827;color:#fff;margin-top:12px;width:100%}
     .muted{color:#555;font-size:14px}
-    #status{margin-top:10px;font-weight:800}
+    #status{margin-top:10px;font-weight:900}
     .box{background:#f7f7f7;border:1px solid #e1e1e1;border-radius:12px;padding:12px;margin-top:10px}
-    .k{font-weight:800}
-    .check{display:flex;gap:10px;align-items:center;margin-top:10px}
-    .check input{width:auto;margin:0}
+    .k{font-weight:900}
+    .pill{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid #ccc;margin:4px 6px 0 0;font-size:13px}
+    .smallbtn{background:#0f172a;margin-top:8px}
+    .danger{background:#b00020}
+    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+    @media(max-width:900px){.grid3{grid-template-columns:1fr}}
+    hr{border:0;border-top:1px solid #ddd;margin:12px 0}
+    .topbar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+    @media(max-width:900px){.topbar{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <h1>LP Assessoria Prev</h1>
-  <p class="muted">Salva dados na planilha e (se escolhido) gera Contrato + Procuração em PDF no Drive.</p>
+  <p class="muted">Mini CRM previdenciário (Drive + Planilha) com pendências, perícias, maternidade e anexos.</p>
+
+  <div class="card">
+    <h2>Painel rápido</h2>
+    <div class="topbar">
+      <button id="btnPendencias" type="button">PENDÊNCIAS</button>
+      <button id="btnPericias" type="button">PERÍCIAS DA SEMANA</button>
+      <button id="btnMaternidades" type="button">MATERNIDADES (PRAZOS)</button>
+    </div>
+    <button id="btnListar" type="button" class="smallbtn">LISTAR CLIENTES</button>
+
+    <div id="painelBox" class="box" style="display:none"></div>
+  </div>
 
   <div class="card">
     <h2>Modo</h2>
-    <div class="check">
-      <input id="apenasCadastro" type="checkbox">
-      <label for="apenasCadastro" style="margin:0">APENAS CADASTRO (não gera pasta/PDFs — só planilha)</label>
+    <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
+      <input id="apenasCadastro" type="checkbox" style="width:auto;margin:0">
+      <div>
+        <div class="k">APENAS CADASTRO</div>
+        <div class="muted">Não gera documentos/pasta. Só grava na planilha.</div>
+      </div>
     </div>
   </div>
 
   <div class="card">
-    <h2>Dados do Cliente (Documentos)</h2>
+    <h2>Fluxo do caso</h2>
+    <label>Situação do caso</label>
+    <select id="situacaoCaso">
+      <option>ATENDIMENTO INICIAL</option>
+      <option>DOCUMENTOS PENDENTES</option>
+      <option>PROTOCOLO INSS</option>
+      <option>EXIGÊNCIA</option>
+      <option>PERÍCIA / AVALIAÇÃO SOCIAL</option>
+      <option>RECURSO</option>
+      <option>JUDICIAL</option>
+      <option>CUMPRIMENTO / RPV / PRECATÓRIO</option>
+      <option>CONCEDIDO</option>
+      <option>INDEFERIDO</option>
+      <option>CONCLUÍDO / ARQUIVADO</option>
+    </select>
 
+    <div class="row">
+      <div>
+        <label>Próxima ação (opcional)</label>
+        <input id="proximaAcao" placeholder="Ex.: solicitar laudo, protocolar, cumprir exigência...">
+      </div>
+      <div>
+        <label>Prazo (opcional)</label>
+        <input id="prazoISO" type="date">
+      </div>
+    </div>
+    <p class="muted">Ao salvar, a “Última movimentação” é atualizada automaticamente.</p>
+  </div>
+
+  <div class="card">
+    <h2>Dados do Cliente (Documentos)</h2>
     <label>Nome completo *</label>
     <input id="clienteNome" autocomplete="name" required>
 
@@ -99,7 +147,7 @@
       </div>
       <div>
         <label>Acesso GOV *</label>
-        <input id="govAcesso" placeholder="Senha / acesso do GOV" required>
+        <input id="govAcesso" placeholder="Acesso do GOV" required>
       </div>
     </div>
 
@@ -171,6 +219,25 @@
       <option value="SIM">SIM</option>
       <option value="NÃO">NÃO</option>
     </select>
+
+    <hr>
+
+    <div class="row">
+      <div>
+        <label>DATA DA PERÍCIA (opcional)</label>
+        <input id="dataPericiaISO" type="date">
+      </div>
+      <div>
+        <label>DATA DO PARTO (opcional)</label>
+        <input id="dataPartoISO" type="date">
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="k">Data final do benefício (maternidade)</div>
+      <div class="muted">Calculado automaticamente: parto + 120 dias.</div>
+      <div id="dataFinalCalc" class="k" style="margin-top:6px">—</div>
+    </div>
   </div>
 
   <div class="card">
@@ -217,6 +284,14 @@
   </div>
 
   <div class="card">
+    <h2>Checklist + Anexos (Drive)</h2>
+    <p class="muted">Gere o checklist do benefício e anexe os documentos. Se for imagem (JPG/PNG), o sistema cria PDF automaticamente.</p>
+
+    <button id="btnChecklist" type="button" class="smallbtn">GERAR CHECKLIST DO BENEFÍCIO</button>
+    <div id="checklistBox" class="box" style="display:none"></div>
+  </div>
+
+  <div class="card">
     <h2>Buscar cliente por CPF</h2>
     <label>CPF para buscar</label>
     <input id="cpfBusca" inputmode="numeric" placeholder="Digite o CPF">
@@ -225,11 +300,24 @@
   </div>
 
 <script>
-  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbznCaU1HqqG2gHWSQ9G5KfVgVodEIzJhgK8kqQEFCNnzvmT3RgJaX2PsPKhf2WwTjyX/exec";
+  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzyKDOx6GQ7R5xQMfOpOWZH998JjqSOkoQq2ug1DvoW501ki2UP12k7EuXmFHSsQ60U/exec";
   const TOKEN = "BRUNO-SEGURANCA-2026";
 
   function $(id){ return document.getElementById(id); }
   function onlyDigits(s){ return String(s||"").replace(/\D+/g,""); }
+  function todayISO(){
+    const d=new Date(); const p=n=>String(n).padStart(2,"0");
+    return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+  }
+
+  function addDays(iso, days){
+    if(!iso) return "";
+    const d = new Date(iso+"T00:00:00");
+    if(isNaN(d.getTime())) return "";
+    d.setDate(d.getDate()+days);
+    const p=n=>String(n).padStart(2,"0");
+    return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+  }
 
   function regra(b){
     b=(b||"").toLowerCase();
@@ -238,14 +326,6 @@
     return "REGRA_2";
   }
 
-  function todayISO(){
-    const d=new Date(); const p=n=>String(n).padStart(2,"0");
-    return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
-  }
-  function brDateFromISO(iso){
-    const [y,m,d]=String(iso||"").split("-");
-    return `${d}/${m}/${y}`;
-  }
   function setStatus(msg, ok){
     const el=$("status");
     el.style.color = ok ? "#0a7b34" : "#b00020";
@@ -255,6 +335,12 @@
     const v = ($(id).value || "").trim();
     if(!v) throw new Error("Preencha: " + label);
     return v;
+  }
+
+  function renderDataFinal(){
+    const parto = ($("dataPartoISO").value||"").trim();
+    const fim = parto ? addDays(parto, 120) : "";
+    $("dataFinalCalc").textContent = fim ? fim : "—";
   }
 
   function renderHonorarios(){
@@ -325,6 +411,33 @@
     `;
   }
 
+  // JSONP helper
+  function jsonp(url, cbName){
+    return new Promise((resolve, reject)=>{
+      const script = document.createElement("script");
+      const timeout = setTimeout(()=>{
+        script.remove();
+        reject(new Error("Tempo esgotado."));
+      }, 12000);
+
+      window[cbName] = (data)=>{
+        clearTimeout(timeout);
+        script.remove();
+        delete window[cbName];
+        resolve(data);
+      };
+
+      script.src = url;
+      script.onerror = ()=>{
+        clearTimeout(timeout);
+        script.remove();
+        delete window[cbName];
+        reject(new Error("Falha ao carregar."));
+      };
+      document.body.appendChild(script);
+    });
+  }
+
   async function salvar(){
     try{
       setStatus("Enviando...", true);
@@ -337,6 +450,17 @@
         token: TOKEN,
         apenasCadastro,
 
+        // fluxo
+        situacaoCaso: ($("situacaoCaso").value||"").trim(),
+        proximaAcao: ($("proximaAcao").value||"").trim(),
+        prazoISO: ($("prazoISO").value||"").trim(),
+        ultimaMovimentacaoISO: todayISO(),
+
+        // datas controle
+        dataPericiaISO: ($("dataPericiaISO").value||"").trim(),
+        dataPartoISO: ($("dataPartoISO").value||"").trim(),
+
+        // cliente
         clienteNome: valReq("clienteNome","Nome completo"),
         clienteCpf: onlyDigits(valReq("clienteCpf","CPF")),
         clienteRg: ($("clienteRg").value||"").trim(),
@@ -346,6 +470,7 @@
         clienteEndereco: valReq("clienteEndereco","Endereço"),
         clienteUF: valReq("clienteUF","UF"),
 
+        // interno
         clienteTelefone: valReq("clienteTelefone","Telefone"),
         govAcesso: valReq("govAcesso","Acesso GOV"),
         especialidadeMedica: ($("especialidadeMedica").value||"").trim(),
@@ -356,10 +481,15 @@
         qualidadeSegurado: ($("qualidadeSegurado").value||"").trim(),
         estaTrabalhando: ($("estaTrabalhando").value||"").trim(),
 
+        // docs
         beneficio,
         assinaturaARogo: ($("assinaturaARogo").value || "NÃO"),
         local: valReq("local","Local"),
-        data: brDateFromISO(valReq("data","Data")),
+        data: (function(){
+          const iso = valReq("data","Data");
+          const [y,m,d]=iso.split("-");
+          return `${d}/${m}/${y}`;
+        })(),
       };
 
       if(!apenasCadastro){
@@ -381,6 +511,7 @@
         }
       }
 
+      // aqui usamos no-cors para evitar bloqueios de CORS
       await fetch(WEBAPP_URL, {
         method: "POST",
         mode: "no-cors",
@@ -389,38 +520,12 @@
       });
 
       setStatus(apenasCadastro
-        ? "✅ Cadastro salvo na planilha (sem documentos)."
-        : "✅ Enviado! Aguarde 10–20s e confira Drive + Planilha.", true);
+        ? "✅ Cadastro/atualização salva na planilha (sem documentos)."
+        : "✅ Salvo! Aguarde alguns segundos e confira Drive + Planilha.", true);
 
     } catch(err){
       setStatus("Erro: " + (err.message || err), false);
     }
-  }
-
-  function jsonp(url, cbName){
-    return new Promise((resolve, reject)=>{
-      const script = document.createElement("script");
-      const timeout = setTimeout(()=>{
-        script.remove();
-        reject(new Error("Tempo esgotado na busca."));
-      }, 12000);
-
-      window[cbName] = (data)=>{
-        clearTimeout(timeout);
-        script.remove();
-        delete window[cbName];
-        resolve(data);
-      };
-
-      script.src = url;
-      script.onerror = ()=>{
-        clearTimeout(timeout);
-        script.remove();
-        delete window[cbName];
-        reject(new Error("Falha ao buscar."));
-      };
-      document.body.appendChild(script);
-    });
   }
 
   async function buscarCpf(){
@@ -453,19 +558,194 @@
         <div><span class="k">UF:</span> ${d.UF||""}</div>
         <div><span class="k">Acesso GOV:</span> ${d.AcessoGOV||""}</div>
         <div><span class="k">Benefício:</span> ${d.Beneficio||""}</div>
-        <div><span class="k">Especialidade:</span> ${d.EspecialidadeMedica||""}</div>
-        <div><span class="k">Obs. doença:</span> ${d.ObservacaoDoenca||""}</div>
-        <div><span class="k">Laudo:</span> ${d.PossuiLaudo||""} ${d.TempoLaudo ? "(" + d.TempoLaudo + ")" : ""}</div>
-        <div><span class="k">Vai pagar laudo:</span> ${d.VaiPagarLaudo||""}</div>
-        <div><span class="k">Qualidade segurado:</span> ${d.QualidadeSegurado||""}</div>
-        <div><span class="k">Trabalhando:</span> ${d.EstaTrabalhando||""}</div>
-        <div><span class="k">A rogo:</span> ${d.AssinaturaARogo||""}</div>
-        <div><span class="k">Modo:</span> ${d.ModoCadastro||""}</div>
+        <div><span class="k">Situação:</span> ${d.SituacaoCaso||""}</div>
+        <div><span class="k">Últ. mov.:</span> ${d.UltimaMovimentacaoISO||""}</div>
+        <div><span class="k">Próxima ação:</span> ${d.ProximaAcao||""}</div>
+        <div><span class="k">Prazo:</span> ${d.PrazoISO||""}</div>
+        <hr>
+        <div><span class="k">Perícia:</span> ${d.DataPericiaISO||""}</div>
+        <div><span class="k">Parto:</span> ${d.DataPartoISO||""}</div>
+        <div><span class="k">Final benefício:</span> ${d.DataFinalBeneficioISO||""}</div>
+        <hr>
+        <div class="muted"><span class="k">A rogo:</span> ${d.AssinaturaARogo||""} | <span class="k">Modo:</span> ${d.ModoCadastro||""}</div>
       `;
     } catch(err){
       $("resultadoBusca").innerHTML = "Erro: " + (err.message || err);
     }
   }
+
+  async function painel(action){
+    $("painelBox").style.display = "block";
+    $("painelBox").innerHTML = "Carregando...";
+
+    const cbName = "cb_" + Math.random().toString(36).slice(2);
+    const url = `${WEBAPP_URL}?action=${encodeURIComponent(action)}&callback=${encodeURIComponent(cbName)}`;
+
+    try{
+      const r = await jsonp(url, cbName);
+      if(!r || !r.ok){
+        $("painelBox").innerHTML = "Erro ao carregar.";
+        return;
+      }
+      const items = r.items || [];
+      if(!items.length){
+        $("painelBox").innerHTML = "✅ Nenhum item encontrado.";
+        return;
+      }
+
+      if(action==="pendencias"){
+        $("painelBox").innerHTML = items.map(it => `
+          <div style="margin-bottom:10px">
+            <div class="pill">${it.Flags||""}</div>
+            <div><span class="k">${it.Nome}</span> — CPF ${it.CPF}</div>
+            <div class="muted">${it.Beneficio||""} | ${it.Situacao||""}</div>
+            <div class="muted">Últ. mov.: ${it.UltimaMovimentacaoISO||""} | Prazo: ${it.PrazoISO||""}</div>
+            <div class="muted">Próxima ação: ${it.ProximaAcao||""}</div>
+          </div>
+        `).join("");
+        return;
+      }
+
+      if(action==="pericias"){
+        $("painelBox").innerHTML = items.map(it=>`
+          <div style="margin-bottom:10px">
+            <div class="pill">PERÍCIA</div>
+            <div class="k">${it.Data} — ${it.Nome}</div>
+            <div class="muted">CPF ${it.CPF} | ${it.Beneficio||""} | ${it.Situacao||""}</div>
+          </div>
+        `).join("");
+        return;
+      }
+
+      if(action==="maternidades"){
+        $("painelBox").innerHTML = items.map(it=>`
+          <div style="margin-bottom:10px">
+            <div class="pill">MATERNIDADE</div>
+            <div class="k">${it.Nome}</div>
+            <div class="muted">Parto: ${it.DataPartoISO||""} | Final: ${it.DataFinalBeneficioISO||""}</div>
+            <div class="muted">CPF ${it.CPF} | ${it.Situacao||""}</div>
+          </div>
+        `).join("");
+        return;
+      }
+
+      if(action==="listar"){
+        $("painelBox").innerHTML = items.map(it=>`
+          <div style="margin-bottom:10px">
+            <div class="k">${it.Nome}</div>
+            <div class="muted">CPF ${it.CPF} | ${it.Beneficio||""} | ${it.Situacao||""}</div>
+            <div class="muted">Últ. mov.: ${it.UltimaMov||""}</div>
+          </div>
+        `).join("");
+        return;
+      }
+
+      $("painelBox").innerHTML = JSON.stringify(items,null,2);
+
+    } catch(err){
+      $("painelBox").innerHTML = "Erro: " + (err.message || err);
+    }
+  }
+
+  async function gerarChecklist(){
+    const beneficio = ($("beneficio").value||"").trim();
+    if(!beneficio){ alert("Selecione o benefício primeiro."); return; }
+
+    $("checklistBox").style.display = "block";
+    $("checklistBox").innerHTML = "Gerando checklist...";
+
+    const cbName = "cb_" + Math.random().toString(36).slice(2);
+    const url = `${WEBAPP_URL}?action=checklist&beneficio=${encodeURIComponent(beneficio)}&callback=${encodeURIComponent(cbName)}`;
+
+    try{
+      const r = await jsonp(url, cbName);
+      const items = (r && r.items) ? r.items : [];
+      if(!items.length){
+        $("checklistBox").innerHTML = "Checklist vazio.";
+        return;
+      }
+
+      $("checklistBox").innerHTML = items.map((item, idx)=>`
+        <div style="border-bottom:1px solid #ddd;padding:10px 0">
+          <div class="k">${item}</div>
+          <div class="muted">Anexe o documento deste item.</div>
+
+          <input type="file" id="file_${idx}" accept="image/*,.pdf,.doc,.docx,.png,.jpg,.jpeg">
+          <div style="display:flex;gap:10px;align-items:center;margin-top:8px">
+            <input type="checkbox" id="conv_${idx}" checked style="width:auto;margin:0">
+            <label for="conv_${idx}" style="margin:0;font-weight:700">Converter imagem para PDF</label>
+          </div>
+          <button type="button" class="smallbtn" onclick="uploadChecklist(${idx}, '${item.replace(/'/g,"\\'")}')">ANEXAR</button>
+          <div id="up_${idx}" class="muted"></div>
+        </div>
+      `).join("");
+
+    } catch(err){
+      $("checklistBox").innerHTML = "Erro: " + (err.message || err);
+    }
+  }
+
+  async function uploadChecklist(idx, item){
+    try{
+      const cpf = onlyDigits(($("clienteCpf").value||"").trim());
+      const nome = ($("clienteNome").value||"").trim();
+      const beneficio = ($("beneficio").value||"").trim();
+
+      if(!cpf || !nome){ alert("Preencha Nome e CPF do cliente antes de anexar."); return; }
+      if(!beneficio){ alert("Selecione o benefício antes de anexar."); return; }
+
+      const input = document.getElementById(`file_${idx}`);
+      const file = input.files && input.files[0];
+      if(!file){ alert("Selecione um arquivo."); return; }
+
+      document.getElementById(`up_${idx}`).textContent = "Enviando...";
+
+      const conv = document.getElementById(`conv_${idx}`).checked;
+
+      const base64 = await new Promise((resolve, reject)=>{
+        const r = new FileReader();
+        r.onload = ()=> {
+          const dataUrl = String(r.result||"");
+          const b64 = dataUrl.split(",")[1] || "";
+          resolve(b64);
+        };
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+
+      const payload = {
+        token: TOKEN,
+        action: "upload",
+        clienteCpf: cpf,
+        clienteNome: nome,
+        beneficio: beneficio,
+        checkItem: item,
+        filename: file.name,
+        mimeType: file.type || "application/octet-stream",
+        base64: base64,
+        convertToPdf: conv
+      };
+
+      const res = await fetch(WEBAPP_URL, {
+        method: "POST",
+        headers: {"Content-Type":"text/plain;charset=utf-8"},
+        body: JSON.stringify(payload)
+      });
+      const j = await res.json();
+
+      if(!j || !j.ok){
+        document.getElementById(`up_${idx}`).textContent = "Erro no upload.";
+        return;
+      }
+
+      document.getElementById(`up_${idx}`).textContent =
+        j.pdfId ? "✅ Anexado (PDF gerado)." : "✅ Anexado.";
+
+    } catch(err){
+      document.getElementById(`up_${idx}`).textContent = "Erro: " + (err.message || err);
+    }
+  }
+  window.uploadChecklist = uploadChecklist;
 
   document.addEventListener("DOMContentLoaded", ()=>{
     $("data").value = todayISO();
@@ -473,6 +753,15 @@
     $("apenasCadastro").addEventListener("change", renderHonorarios);
     $("btnSalvar").addEventListener("click", (e)=>{ e.preventDefault(); salvar(); });
     $("btnBuscar").addEventListener("click", buscarCpf);
+    $("btnChecklist").addEventListener("click", gerarChecklist);
+
+    $("btnPendencias").addEventListener("click", ()=>painel("pendencias"));
+    $("btnPericias").addEventListener("click", ()=>painel("pericias"));
+    $("btnMaternidades").addEventListener("click", ()=>painel("maternidades"));
+    $("btnListar").addEventListener("click", ()=>painel("listar"));
+
+    $("dataPartoISO").addEventListener("change", renderDataFinal);
+    renderDataFinal();
   });
 </script>
 </body>
