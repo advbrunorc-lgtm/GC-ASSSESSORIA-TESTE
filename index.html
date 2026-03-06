@@ -7,41 +7,137 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#111827">
   <style>
-    body{font-family:system-ui,Arial;margin:16px;max-width:980px}
+    body{font-family:system-ui,Arial,sans-serif;margin:16px;max-width:1100px}
     .card{border:1px solid #ddd;border-radius:14px;padding:14px;margin:12px 0}
+    h1,h2,h3{margin:0 0 10px}
     label{display:block;font-weight:800;margin-top:10px}
-    input,select,textarea{width:100%;padding:10px;margin-top:6px;border:1px solid #ccc;border-radius:12px;font-size:16px}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media(max-width:720px){.row{grid-template-columns:1fr}}
+    input,select,textarea{width:100%;padding:10px;margin-top:6px;border:1px solid #ccc;border-radius:12px;font-size:16px;box-sizing:border-box}
     button{padding:12px 14px;border:0;border-radius:12px;cursor:pointer;font-weight:900;background:#111827;color:#fff;margin-top:12px;width:100%}
-    .muted{color:#555;font-size:14px}
-    #status{margin-top:10px;font-weight:900}
+    .smallbtn{background:#0f172a}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+    .topbar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
     .box{background:#f7f7f7;border:1px solid #e1e1e1;border-radius:12px;padding:12px;margin-top:10px}
+    .muted{color:#555;font-size:14px}
     .k{font-weight:900}
     .pill{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid #ccc;margin:4px 6px 0 0;font-size:13px}
-    .smallbtn{background:#0f172a;margin-top:8px}
-    .danger{background:#b00020}
-    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-    @media(max-width:900px){.grid3{grid-template-columns:1fr}}
-    hr{border:0;border-top:1px solid #ddd;margin:12px 0}
-    .topbar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-    @media(max-width:900px){.topbar{grid-template-columns:1fr}}
+    .benef-card{border:1px solid #d7d7d7;border-radius:12px;padding:12px;margin-top:10px;background:#fafafa}
+    .hint{font-size:13px;color:#444;margin-top:6px}
+    .hidden{display:none}
+    @media(max-width:900px){
+      .row,.row3,.topbar{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
   <h1>LP Assessoria Prev</h1>
-  <p class="muted">Mini CRM previdenciário (Drive + Planilha) com pendências, perícias, maternidade e anexos.</p>
+  <p class="muted">Cadastro, documentos, agenda, lembretes e mini CRM previdenciário.</p>
+
+  <div class="card">
+    <h2>Lembretes do dia</h2>
+    <button id="btnLembretes" type="button">ATUALIZAR LEMBRETES DE HOJE</button>
+    <div id="lembretesBox" class="box" style="display:none"></div>
+  </div>
 
   <div class="card">
     <h2>Painel rápido</h2>
     <div class="topbar">
       <button id="btnPendencias" type="button">PENDÊNCIAS</button>
-      <button id="btnPericias" type="button">PERÍCIAS DA SEMANA</button>
-      <button id="btnMaternidades" type="button">MATERNIDADES (PRAZOS)</button>
+      <button id="btnAgendaHoje" type="button">AGENDA DE HOJE</button>
+      <button id="btnBuscarCpf" type="button">BUSCAR CLIENTE</button>
     </div>
-    <button id="btnListar" type="button" class="smallbtn">LISTAR CLIENTES</button>
-
     <div id="painelBox" class="box" style="display:none"></div>
+  </div>
+
+  <div class="card">
+    <h2>Buscar cliente</h2>
+
+    <div class="row">
+      <div>
+        <label>Buscar por CPF</label>
+        <input id="cpfBusca" inputmode="numeric" placeholder="Digite o CPF">
+      </div>
+      <div>
+        <label>Buscar por nome</label>
+        <input id="nomeBusca" placeholder="Digite nome completo ou só o primeiro nome">
+      </div>
+    </div>
+
+    <div class="row">
+      <button id="btnBuscarPorCpf" type="button">BUSCAR POR CPF</button>
+      <button id="btnBuscarPorNome" type="button">BUSCAR POR NOME</button>
+    </div>
+
+    <div id="resultadoBusca" class="box" style="display:none"></div>
+    <div id="resultadoNomeLista" class="box" style="display:none"></div>
+  </div>
+
+  <div class="card">
+    <h2>Agenda</h2>
+
+    <div class="row">
+      <div>
+        <label>Tipo de agendamento</label>
+        <select id="agendaTipo">
+          <option value="CONSULTA">CONSULTA</option>
+          <option value="DIVERSO">DIVERSO</option>
+        </select>
+      </div>
+      <div>
+        <label>Data</label>
+        <input id="agendaDataISO" type="date">
+      </div>
+    </div>
+
+    <div class="row3">
+      <div>
+        <label>Hora (opcional)</label>
+        <input id="agendaHora" type="time">
+      </div>
+      <div>
+        <label>CPF do cliente (opcional)</label>
+        <input id="agendaCpf" inputmode="numeric" placeholder="Se souber, informe">
+      </div>
+      <div>
+        <label>Nome / referência</label>
+        <input id="agendaNome" placeholder="Nome completo, primeiro nome ou referência">
+      </div>
+    </div>
+
+    <div id="agendaConsultaCampos">
+      <div class="row">
+        <div>
+          <label>Clínica</label>
+          <select id="agendaClinica">
+            <option value="">Selecione...</option>
+            <option>FEB</option>
+            <option>SÃO JUDAS TADEU</option>
+            <option>PREVIDAS</option>
+            <option>OUTRO</option>
+          </select>
+        </div>
+        <div>
+          <label>Especialidade</label>
+          <select id="agendaEspecialidade">
+            <option value="">Selecione...</option>
+            <option>ORTOPEDIA</option>
+            <option>PSIQUIATRIA</option>
+            <option>NEUROLOGIA</option>
+            <option>OFTALMOLOGIA</option>
+            <option>ONCOLOGIA</option>
+            <option>REUMATOLOGIA</option>
+            <option>CLÍNICO GERAL</option>
+            <option>OUTRA</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <label>Observação (opcional)</label>
+    <textarea id="agendaObs" rows="2"></textarea>
+
+    <button id="btnSalvarAgenda" type="button">SALVAR AGENDAMENTO</button>
+    <div id="agendaStatus" class="muted"></div>
   </div>
 
   <div class="card">
@@ -82,18 +178,22 @@
         <input id="prazoISO" type="date">
       </div>
     </div>
-    <p class="muted">Ao salvar, a “Última movimentação” é atualizada automaticamente.</p>
   </div>
 
   <div class="card">
-    <h2>Dados do Cliente (Documentos)</h2>
+    <h2>Dados do cliente</h2>
+
     <label>Nome completo *</label>
     <input id="clienteNome" autocomplete="name" required>
 
-    <div class="row">
+    <div class="row3">
       <div>
         <label>CPF *</label>
         <input id="clienteCpf" inputmode="numeric" placeholder="Pode digitar com pontos/traço" required>
+      </div>
+      <div>
+        <label>Data de nascimento</label>
+        <input id="clienteDataNascimentoISO" type="date">
       </div>
       <div>
         <label>RG (opcional)</label>
@@ -138,16 +238,16 @@
   </div>
 
   <div class="card">
-    <h2>Controle interno (Planilha)</h2>
+    <h2>Controle interno</h2>
 
     <div class="row">
       <div>
-        <label>Telefone do cliente *</label>
-        <input id="clienteTelefone" inputmode="tel" placeholder="(65) 9xxxx-xxxx" required>
+        <label>Telefone do cliente (opcional)</label>
+        <input id="clienteTelefone" inputmode="tel" placeholder="(65) 9xxxx-xxxx">
       </div>
       <div>
-        <label>Acesso GOV *</label>
-        <input id="govAcesso" placeholder="Acesso do GOV" required>
+        <label>Acesso GOV (opcional)</label>
+        <input id="govAcesso" placeholder="Acesso do GOV">
       </div>
     </div>
 
@@ -220,20 +320,18 @@
       <option value="NÃO">NÃO</option>
     </select>
 
-    <hr>
-
     <div class="row">
       <div>
-        <label>DATA DA PERÍCIA (opcional)</label>
+        <label>Data da perícia (opcional)</label>
         <input id="dataPericiaISO" type="date">
       </div>
-      <div>
-        <label>DATA DO PARTO (opcional)</label>
+      <div id="boxDataParto" class="hidden">
+        <label>Data do parto</label>
         <input id="dataPartoISO" type="date">
       </div>
     </div>
 
-    <div class="box">
+    <div id="boxDataFinal" class="box hidden">
       <div class="k">Data final do benefício (maternidade)</div>
       <div class="muted">Calculado automaticamente: parto + 120 dias.</div>
       <div id="dataFinalCalc" class="k" style="margin-top:6px">—</div>
@@ -242,20 +340,11 @@
 
   <div class="card">
     <h2>Contrato / Procuração</h2>
+    <p class="muted">Você pode incluir até 3 benefícios no mesmo contrato, cada um com sua cobrança própria.</p>
 
-    <label>Tipo de benefício *</label>
-    <select id="beneficio" required>
-      <option value="">Selecione...</option>
-      <option>Benefício por incapacidade temporária</option>
-      <option>Incapacidade permanente</option>
-      <option>Aposentadoria</option>
-      <option>Auxílio-acidente</option>
-      <option>Pensão por morte</option>
-      <option>BPC</option>
-      <option>Salário-maternidade</option>
-    </select>
+    <div id="beneficiosArea"></div>
 
-    <div id="camposHonorarios"></div>
+    <button id="btnAddBeneficio" type="button" class="smallbtn">ADICIONAR OUTRO BENEFÍCIO</button>
 
     <div class="row">
       <div>
@@ -270,12 +359,12 @@
 
     <div class="row">
       <div>
-        <label>Local *</label>
-        <input id="local" value="Várzea Grande/MT" required>
+        <label>Local</label>
+        <input id="local" value="Várzea Grande/MT">
       </div>
       <div>
-        <label>Data *</label>
-        <input id="data" type="date" required>
+        <label>Data</label>
+        <input id="data" type="date">
       </div>
     </div>
 
@@ -284,23 +373,14 @@
   </div>
 
   <div class="card">
-    <h2>Checklist + Anexos (Drive)</h2>
-    <p class="muted">Gere o checklist do benefício e anexe os documentos. Se for imagem (JPG/PNG), o sistema cria PDF automaticamente.</p>
-
-    <button id="btnChecklist" type="button" class="smallbtn">GERAR CHECKLIST DO BENEFÍCIO</button>
+    <h2>Checklist + anexos</h2>
+    <p class="muted">Gere o checklist com base no primeiro benefício selecionado e anexe os documentos. Imagem vira PDF automaticamente.</p>
+    <button id="btnChecklist" type="button" class="smallbtn">GERAR CHECKLIST</button>
     <div id="checklistBox" class="box" style="display:none"></div>
   </div>
 
-  <div class="card">
-    <h2>Buscar cliente por CPF</h2>
-    <label>CPF para buscar</label>
-    <input id="cpfBusca" inputmode="numeric" placeholder="Digite o CPF">
-    <button id="btnBuscar" type="button">BUSCAR</button>
-    <div id="resultadoBusca" class="box" style="display:none"></div>
-  </div>
-
 <script>
-  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzyKDOx6GQ7R5xQMfOpOWZH998JjqSOkoQq2ug1DvoW501ki2UP12k7EuXmFHSsQ60U/exec";
+  const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxPQMCjwxIYJTUcVRSD3yU37XBxXrMMt8kUe0LCQdaeVXaNRjA4WdRXBwAfaQ2WnUey/exec";
   const TOKEN = "BRUNO-SEGURANCA-2026";
 
   function $(id){ return document.getElementById(id); }
@@ -309,7 +389,6 @@
     const d=new Date(); const p=n=>String(n).padStart(2,"0");
     return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
   }
-
   function addDays(iso, days){
     if(!iso) return "";
     const d = new Date(iso+"T00:00:00");
@@ -318,16 +397,14 @@
     const p=n=>String(n).padStart(2,"0");
     return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
   }
-
-  function regra(b){
-    b=(b||"").toLowerCase();
-    if (b.includes("incapacidade tempor")) return "REGRA_1";
-    if (b.includes("salário") || b.includes("matern")) return "REGRA_3";
-    return "REGRA_2";
-  }
-
   function setStatus(msg, ok){
     const el=$("status");
+    el.style.color = ok ? "#0a7b34" : "#b00020";
+    el.textContent = msg;
+  }
+  function setAgendaStatus(msg, ok){
+    const el=$("agendaStatus");
+    if(!el) return;
     el.style.color = ok ? "#0a7b34" : "#b00020";
     el.textContent = msg;
   }
@@ -336,82 +413,6 @@
     if(!v) throw new Error("Preencha: " + label);
     return v;
   }
-
-  function renderDataFinal(){
-    const parto = ($("dataPartoISO").value||"").trim();
-    const fim = parto ? addDays(parto, 120) : "";
-    $("dataFinalCalc").textContent = fim ? fim : "—";
-  }
-
-  function renderHonorarios(){
-    const box = $("camposHonorarios");
-    const apenas = $("apenasCadastro").checked;
-    const b = $("beneficio").value;
-
-    if(apenas){
-      box.innerHTML = `<p class="muted">Modo APENAS CADASTRO ativado: honorários e documentos não serão gerados.</p>`;
-      return;
-    }
-    if(!b){ box.innerHTML=""; return; }
-
-    const r = regra(b);
-
-    if(r==="REGRA_1"){
-      box.innerHTML = `
-        <h3>Honorários (Incapacidade Temporária)</h3>
-        <div class="row">
-          <div><label>% inicial *</label><input id="percInicial" type="number" value="30" required></div>
-          <div><label>Nº parcelas iniciais *</label><input id="numParcelasIniciais" type="number" value="8" required></div>
-        </div>
-        <label>% prorrogação *</label>
-        <input id="percProrrogacao" type="number" value="30" required>
-      `;
-      return;
-    }
-
-    if(r==="REGRA_3"){
-      box.innerHTML = `
-        <h3>Honorários (Salário-maternidade)</h3>
-        <div class="row">
-          <div><label>% *</label><input id="percMaternidade" type="number" value="30" required></div>
-          <div><label>Nº parcelas *</label><input id="numParcelasMaternidade" type="number" value="4" required></div>
-        </div>
-      `;
-      return;
-    }
-
-    box.innerHTML = `
-      <h3>Honorários (Aposentadorias / Permanente / Auxílio-acidente / Pensão / BPC)</h3>
-      <div class="row">
-        <div><label>% sobre retroativo *</label><input id="percRetroativo" type="number" value="45" required></div>
-        <div><label>Nº primeiras parcelas integrais *</label><input id="numPrimeirasParcelasIntegrais" type="number" value="6" required></div>
-      </div>
-
-      <label>Parcelamento das parcelas integrais?</label>
-      <select id="parcelamentoAtivado">
-        <option value="false" selected>NÃO</option>
-        <option value="true">SIM</option>
-      </select>
-
-      <div id="parcelamentoBox"></div>
-    `;
-    $("parcelamentoAtivado").addEventListener("change", renderParcelamento);
-    renderParcelamento();
-  }
-
-  function renderParcelamento(){
-    const on = $("parcelamentoAtivado").value === "true";
-    const box = $("parcelamentoBox");
-    if(!on){ box.innerHTML=""; return; }
-    box.innerHTML = `
-      <div class="row">
-        <div><label>Nº máximo de parcelas *</label><input id="maxParcelasPagamento" type="number" value="12" required></div>
-        <div><label>% mínimo de cada parcela *</label><input id="percMinimoParcela" type="number" value="50" required></div>
-      </div>
-    `;
-  }
-
-  // JSONP helper
   function jsonp(url, cbName){
     return new Promise((resolve, reject)=>{
       const script = document.createElement("script");
@@ -438,31 +439,237 @@
     });
   }
 
+  function regra(beneficio){
+    const b = (beneficio||"").toLowerCase();
+    if (b.includes("incapacidade tempor")) return "REGRA_1";
+    if (b.includes("salário") || b.includes("matern")) return "REGRA_3";
+    return "REGRA_2";
+  }
+
+  let beneficioCount = 0;
+  const maxBeneficios = 3;
+
+  function beneficioCardHTML(idx){
+    return `
+      <div class="benef-card" id="benefCard_${idx}">
+        <div class="row">
+          <div>
+            <label>Benefício ${idx+1}</label>
+            <select id="beneficio_${idx}" onchange="renderBeneficioHonorarios(${idx}); atualizarMaternidadeVisivel();">
+              <option value="">Selecione...</option>
+              <option>Benefício por incapacidade temporária</option>
+              <option>Incapacidade permanente</option>
+              <option>Aposentadoria</option>
+              <option>Auxílio-acidente</option>
+              <option>Pensão por morte</option>
+              <option>BPC</option>
+              <option>Salário-maternidade</option>
+            </select>
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <button type="button" class="smallbtn" onclick="removerBeneficio(${idx})">REMOVER</button>
+          </div>
+        </div>
+        <div id="honorarios_${idx}"></div>
+      </div>
+    `;
+  }
+
+  function adicionarBeneficio(valor=""){
+    if(beneficioCount >= maxBeneficios) return;
+    const idx = beneficioCount++;
+    $("beneficiosArea").insertAdjacentHTML("beforeend", beneficioCardHTML(idx));
+    if(valor){
+      $(`beneficio_${idx}`).value = valor;
+      renderBeneficioHonorarios(idx);
+    }
+    toggleAddBeneficio();
+    atualizarMaternidadeVisivel();
+  }
+
+  function removerBeneficio(idx){
+    const card = $(`benefCard_${idx}`);
+    if(card) card.remove();
+    atualizarMaternidadeVisivel();
+  }
+
+  function toggleAddBeneficio(){
+    const vivos = document.querySelectorAll('[id^="benefCard_"]').length;
+    $("btnAddBeneficio").style.display = vivos >= maxBeneficios ? "none" : "block";
+  }
+
+  function renderBeneficioHonorarios(idx){
+    const b = ($(`beneficio_${idx}`)?.value || "").trim();
+    const box = $(`honorarios_${idx}`);
+    if(!box) return;
+
+    if(!b){
+      box.innerHTML = "";
+      return;
+    }
+
+    const r = regra(b);
+
+    if(r==="REGRA_1"){
+      box.innerHTML = `
+        <div class="row3">
+          <div>
+            <label>% inicial</label>
+            <input id="percInicial_${idx}" type="number" value="30">
+          </div>
+          <div>
+            <label>Nº parcelas iniciais</label>
+            <input id="numParcelasIniciais_${idx}" type="number" value="8">
+          </div>
+          <div>
+            <label>% prorrogação</label>
+            <input id="percProrrogacao_${idx}" type="number" value="30">
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    if(r==="REGRA_3"){
+      box.innerHTML = `
+        <div class="row">
+          <div>
+            <label>% maternidade</label>
+            <input id="percMaternidade_${idx}" type="number" value="30">
+          </div>
+          <div>
+            <label>Nº parcelas maternidade</label>
+            <input id="numParcelasMaternidade_${idx}" type="number" value="4">
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    box.innerHTML = `
+      <div class="row3">
+        <div>
+          <label>% sobre retroativo</label>
+          <input id="percRetroativo_${idx}" type="number" value="45">
+        </div>
+        <div>
+          <label>Nº primeiras parcelas integrais</label>
+          <input id="numPrimeirasParcelasIntegrais_${idx}" type="number" value="6">
+        </div>
+        <div>
+          <label>Parcelamento?</label>
+          <select id="parcelamentoAtivado_${idx}" onchange="toggleParcelamento(${idx})">
+            <option value="false" selected>NÃO</option>
+            <option value="true">SIM</option>
+          </select>
+        </div>
+      </div>
+      <div id="parcelamentoBox_${idx}"></div>
+    `;
+    toggleParcelamento(idx);
+  }
+
+  function toggleParcelamento(idx){
+    const on = ($(`parcelamentoAtivado_${idx}`)?.value === "true");
+    const box = $(`parcelamentoBox_${idx}`);
+    if(!box) return;
+    if(!on){
+      box.innerHTML = "";
+      return;
+    }
+    box.innerHTML = `
+      <div class="row">
+        <div>
+          <label>Nº máximo de parcelas</label>
+          <input id="maxParcelasPagamento_${idx}" type="number" value="12">
+        </div>
+        <div>
+          <label>% mínimo de cada parcela</label>
+          <input id="percMinimoParcela_${idx}" type="number" value="50">
+        </div>
+      </div>
+    `;
+  }
+
+  function beneficiosSelecionados(){
+    const arr = [];
+    document.querySelectorAll('[id^="benefCard_"]').forEach(card=>{
+      const idx = card.id.split("_")[1];
+      const beneficio = ($(`beneficio_${idx}`)?.value || "").trim();
+      if(beneficio) arr.push({idx:Number(idx), beneficio});
+    });
+    return arr;
+  }
+
+  function atualizarMaternidadeVisivel(){
+    const temMaternidade = beneficiosSelecionados().some(x => (x.beneficio||"").toLowerCase().includes("matern"));
+    $("boxDataParto").classList.toggle("hidden", !temMaternidade);
+    $("boxDataFinal").classList.toggle("hidden", !temMaternidade);
+    if(!temMaternidade){
+      $("dataPartoISO").value = "";
+      $("dataFinalCalc").textContent = "—";
+    }
+  }
+
+  function renderDataFinal(){
+    const parto = ($("dataPartoISO").value||"").trim();
+    const fim = parto ? addDays(parto, 120) : "";
+    $("dataFinalCalc").textContent = fim ? fim : "—";
+  }
+
+  function montarHonorariosItens(){
+    const itens = [];
+    beneficiosSelecionados().forEach(({idx, beneficio})=>{
+      const r = regra(beneficio);
+      const item = {beneficio, regra:r};
+
+      if(r==="REGRA_1"){
+        item.percInicial = Number($(`percInicial_${idx}`)?.value || 0);
+        item.numParcelasIniciais = Number($(`numParcelasIniciais_${idx}`)?.value || 0);
+        item.percProrrogacao = Number($(`percProrrogacao_${idx}`)?.value || 0);
+      } else if(r==="REGRA_3"){
+        item.percMaternidade = Number($(`percMaternidade_${idx}`)?.value || 0);
+        item.numParcelasMaternidade = Number($(`numParcelasMaternidade_${idx}`)?.value || 0);
+      } else {
+        item.percRetroativo = Number($(`percRetroativo_${idx}`)?.value || 0);
+        item.numPrimeirasParcelasIntegrais = Number($(`numPrimeirasParcelasIntegrais_${idx}`)?.value || 0);
+        item.parcelamentoAtivado = ($(`parcelamentoAtivado_${idx}`)?.value === "true");
+        if(item.parcelamentoAtivado){
+          item.maxParcelasPagamento = Number($(`maxParcelasPagamento_${idx}`)?.value || 0);
+          item.percMinimoParcela = Number($(`percMinimoParcela_${idx}`)?.value || 0);
+        }
+      }
+      itens.push(item);
+    });
+    return itens;
+  }
+
   async function salvar(){
     try{
       setStatus("Enviando...", true);
 
+      const itens = montarHonorariosItens();
+      const beneficios = itens.map(x=>x.beneficio);
+      if(!beneficios.length) throw new Error("Selecione pelo menos 1 benefício.");
+
       const apenasCadastro = $("apenasCadastro").checked;
-      const beneficio = valReq("beneficio","Tipo de benefício");
-      const r = regra(beneficio);
 
       const payload = {
         token: TOKEN,
         apenasCadastro,
 
-        // fluxo
         situacaoCaso: ($("situacaoCaso").value||"").trim(),
         proximaAcao: ($("proximaAcao").value||"").trim(),
         prazoISO: ($("prazoISO").value||"").trim(),
         ultimaMovimentacaoISO: todayISO(),
 
-        // datas controle
         dataPericiaISO: ($("dataPericiaISO").value||"").trim(),
         dataPartoISO: ($("dataPartoISO").value||"").trim(),
 
-        // cliente
         clienteNome: valReq("clienteNome","Nome completo"),
         clienteCpf: onlyDigits(valReq("clienteCpf","CPF")),
+        clienteDataNascimentoISO: ($("clienteDataNascimentoISO").value||"").trim(),
         clienteRg: ($("clienteRg").value||"").trim(),
         clienteNacionalidade: valReq("clienteNacionalidade","Nacionalidade"),
         clienteProfissao: ($("clienteProfissao").value||"").trim(),
@@ -470,9 +677,8 @@
         clienteEndereco: valReq("clienteEndereco","Endereço"),
         clienteUF: valReq("clienteUF","UF"),
 
-        // interno
-        clienteTelefone: valReq("clienteTelefone","Telefone"),
-        govAcesso: valReq("govAcesso","Acesso GOV"),
+        clienteTelefone: ($("clienteTelefone").value||"").trim(),
+        govAcesso: ($("govAcesso").value||"").trim(),
         especialidadeMedica: ($("especialidadeMedica").value||"").trim(),
         doencaObservacao: ($("doencaObservacao").value||"").trim(),
         possuiLaudo: ($("possuiLaudo").value||"").trim(),
@@ -481,37 +687,20 @@
         qualidadeSegurado: ($("qualidadeSegurado").value||"").trim(),
         estaTrabalhando: ($("estaTrabalhando").value||"").trim(),
 
-        // docs
-        beneficio,
+        beneficios,
+        beneficio: beneficios[0] || "",
+        honorariosItens: itens,
+
         assinaturaARogo: ($("assinaturaARogo").value || "NÃO"),
-        local: valReq("local","Local"),
+        local: ($("local").value||"").trim(),
         data: (function(){
-          const iso = valReq("data","Data");
+          const iso = ($("data").value||"").trim();
+          if(!iso) return "";
           const [y,m,d]=iso.split("-");
           return `${d}/${m}/${y}`;
-        })(),
+        })()
       };
 
-      if(!apenasCadastro){
-        if(r==="REGRA_1"){
-          payload.percInicial = Number(valReq("percInicial","% inicial"));
-          payload.numParcelasIniciais = Number(valReq("numParcelasIniciais","Nº parcelas iniciais"));
-          payload.percProrrogacao = Number(valReq("percProrrogacao","% prorrogação"));
-        } else if(r==="REGRA_3"){
-          payload.percMaternidade = Number(valReq("percMaternidade","% maternidade"));
-          payload.numParcelasMaternidade = Number(valReq("numParcelasMaternidade","Nº parcelas maternidade"));
-        } else {
-          payload.percRetroativo = Number(valReq("percRetroativo","% retroativo"));
-          payload.numPrimeirasParcelasIntegrais = Number(valReq("numPrimeirasParcelasIntegrais","Nº parcelas integrais"));
-          payload.parcelamentoAtivado = ($("parcelamentoAtivado").value === "true");
-          if(payload.parcelamentoAtivado){
-            payload.maxParcelasPagamento = Number(valReq("maxParcelasPagamento","Nº máximo parcelas"));
-            payload.percMinimoParcela = Number(valReq("percMinimoParcela","% mínimo parcela"));
-          }
-        }
-      }
-
-      // aqui usamos no-cors para evitar bloqueios de CORS
       await fetch(WEBAPP_URL, {
         method: "POST",
         mode: "no-cors",
@@ -520,7 +709,7 @@
       });
 
       setStatus(apenasCadastro
-        ? "✅ Cadastro/atualização salva na planilha (sem documentos)."
+        ? "✅ Cadastro/atualização salva na planilha."
         : "✅ Salvo! Aguarde alguns segundos e confira Drive + Planilha.", true);
 
     } catch(err){
@@ -528,10 +717,11 @@
     }
   }
 
-  async function buscarCpf(){
+  async function buscarPorCpf(){
     const cpf = onlyDigits(($("cpfBusca").value||"").trim());
     if(!cpf){ alert("Digite um CPF."); return; }
 
+    $("resultadoNomeLista").style.display = "none";
     $("resultadoBusca").style.display = "block";
     $("resultadoBusca").innerHTML = "Buscando...";
 
@@ -541,45 +731,236 @@
     try{
       const r = await jsonp(url, cbName);
       if(!r || !r.ok){
-        $("resultadoBusca").innerHTML = "Erro: " + (r && r.error ? r.error : "desconhecido");
+        $("resultadoBusca").innerHTML = "Erro na busca.";
         return;
       }
       if(!r.found){
-        $("resultadoBusca").innerHTML = "Cliente não encontrado na planilha para esse CPF.";
+        $("resultadoBusca").innerHTML = "Cliente não encontrado.";
         return;
       }
-
-      const d = r.data || {};
-      $("resultadoBusca").innerHTML = `
-        <div><span class="k">Nome:</span> ${d.Nome||""}</div>
-        <div><span class="k">CPF:</span> ${d.CPF||""}</div>
-        <div><span class="k">Telefone:</span> ${d.Telefone||""}</div>
-        <div><span class="k">Endereço:</span> ${d.Endereco||""}</div>
-        <div><span class="k">UF:</span> ${d.UF||""}</div>
-        <div><span class="k">Acesso GOV:</span> ${d.AcessoGOV||""}</div>
-        <div><span class="k">Benefício:</span> ${d.Beneficio||""}</div>
-        <div><span class="k">Situação:</span> ${d.SituacaoCaso||""}</div>
-        <div><span class="k">Últ. mov.:</span> ${d.UltimaMovimentacaoISO||""}</div>
-        <div><span class="k">Próxima ação:</span> ${d.ProximaAcao||""}</div>
-        <div><span class="k">Prazo:</span> ${d.PrazoISO||""}</div>
-        <hr>
-        <div><span class="k">Perícia:</span> ${d.DataPericiaISO||""}</div>
-        <div><span class="k">Parto:</span> ${d.DataPartoISO||""}</div>
-        <div><span class="k">Final benefício:</span> ${d.DataFinalBeneficioISO||""}</div>
-        <hr>
-        <div class="muted"><span class="k">A rogo:</span> ${d.AssinaturaARogo||""} | <span class="k">Modo:</span> ${d.ModoCadastro||""}</div>
-      `;
+      renderResultadoBusca(r.data || {});
     } catch(err){
       $("resultadoBusca").innerHTML = "Erro: " + (err.message || err);
     }
   }
+
+  async function buscarPorNome(){
+    const q = ($("nomeBusca").value||"").trim();
+    if(!q){ alert("Digite um nome."); return; }
+
+    $("resultadoBusca").style.display = "none";
+    $("resultadoNomeLista").style.display = "block";
+    $("resultadoNomeLista").innerHTML = "Buscando...";
+
+    const cbName = "cb_" + Math.random().toString(36).slice(2);
+    const url = `${WEBAPP_URL}?action=search_name&q=${encodeURIComponent(q)}&callback=${encodeURIComponent(cbName)}`;
+
+    try{
+      const r = await jsonp(url, cbName);
+      if(!r || !r.ok){
+        $("resultadoNomeLista").innerHTML = "Erro na busca.";
+        return;
+      }
+      const items = r.items || [];
+      if(!items.length){
+        $("resultadoNomeLista").innerHTML = "Nenhum cliente encontrado.";
+        return;
+      }
+
+      $("resultadoNomeLista").innerHTML = items.map((it, i)=>`
+        <div style="border-bottom:1px solid #ddd;padding:10px 0">
+          <div class="k">${it.Nome}</div>
+          <div class="muted">CPF: ${it.CPF || ""}</div>
+          <div class="muted">DATA DE NASCIMENTO: ${it.DataNascimentoISO || ""}</div>
+          <div class="muted">ACESSO GOV: ${it.AcessoGOV || ""}</div>
+          <div class="muted">BENEFÍCIO: ${it.Beneficios || ""}</div>
+          <div class="muted">DATA DE CONSULTA: ${it.DataConsultaISO || ""}</div>
+          <div class="muted">DATA DE PERÍCIA: ${it.DataPericiaISO || ""}</div>
+          <div class="muted">DATA DO PARTO: ${it.DataPartoISO || ""}</div>
+          <div class="muted">SITUAÇÃO: ${it.Situacao || ""}</div>
+          <button type="button" class="smallbtn" onclick="carregarPorCpf('${(it.CPF||"").replace(/\D/g,'')}')">ABRIR / EDITAR</button>
+        </div>
+      `).join("");
+    } catch(err){
+      $("resultadoNomeLista").innerHTML = "Erro: " + (err.message || err);
+    }
+  }
+
+  async function carregarPorCpf(cpf){
+    $("cpfBusca").value = cpf;
+    await buscarPorCpf();
+  }
+  window.carregarPorCpf = carregarPorCpf;
+
+  function renderResultadoBusca(d){
+    $("resultadoBusca").style.display = "block";
+    $("resultadoBusca").innerHTML = `
+      <div><span class="k">NOME:</span> <span id="v_nome">${d.Nome||""}</span></div>
+      <div><span class="k">CPF:</span> <span id="v_cpf">${d.CPF||""}</span></div>
+      <div><span class="k">DATA DE NASCIMENTO:</span> <span id="v_dn">${d.DataNascimentoISO||""}</span></div>
+      <div><span class="k">ACESSO GOV:</span> <span id="v_gov">${d.AcessoGOV||""}</span></div>
+      <div><span class="k">BENEFÍCIO:</span> <span id="v_benef">${d.Beneficios||""}</span></div>
+      <div><span class="k">DATA DE CONSULTA:</span> <span id="v_consulta">${d.DataConsultaISO||""}</span></div>
+      <div><span class="k">DATA DE PERÍCIA:</span> <span id="v_pericia">${d.DataPericiaISO||""}</span></div>
+      <div><span class="k">DATA DO PARTO:</span> <span id="v_parto">${d.DataPartoISO||""}</span></div>
+      <div><span class="k">TELEFONE:</span> <span id="v_tel">${d.Telefone||""}</span></div>
+      <div><span class="k">SITUAÇÃO:</span> <span id="v_sit">${d.SituacaoCaso||""}</span></div>
+      <div><span class="k">PRÓXIMA AÇÃO:</span> <span id="v_pa">${d.ProximaAcao||""}</span></div>
+      <div><span class="k">PRAZO:</span> <span id="v_prazo">${d.PrazoISO||""}</span></div>
+      <div><span class="k">DATA FINAL BENEFÍCIO:</span> <span id="v_final">${d.DataFinalBeneficioISO||""}</span></div>
+      <hr>
+      <button type="button" class="smallbtn" onclick='preencherFormulario(${JSON.stringify(d).replace(/'/g,"&#39;")})'>CARREGAR NO FORMULÁRIO</button>
+      <button type="button" class="smallbtn" onclick='mostrarEditorResultado(${JSON.stringify(d).replace(/'/g,"&#39;")})'>EDITAR DIRETAMENTE AQUI</button>
+      <div id="editorResultado" class="box hidden"></div>
+    `;
+  }
+
+  function preencherFormulario(d){
+    $("clienteNome").value = d.Nome || "";
+    $("clienteCpf").value = d.CPF || "";
+    $("clienteDataNascimentoISO").value = d.DataNascimentoISO || "";
+    $("govAcesso").value = d.AcessoGOV || "";
+    $("clienteTelefone").value = d.Telefone || "";
+    $("dataPericiaISO").value = d.DataPericiaISO || "";
+    $("dataPartoISO").value = d.DataPartoISO || "";
+    $("situacaoCaso").value = d.SituacaoCaso || "ATENDIMENTO INICIAL";
+    $("proximaAcao").value = d.ProximaAcao || "";
+    $("prazoISO").value = d.PrazoISO || "";
+    $("clienteEndereco").value = d.Endereco || "";
+    $("clienteUF").value = d.UF || "MT";
+    $("especialidadeMedica").value = d.EspecialidadeMedica || "";
+    $("doencaObservacao").value = d.ObservacaoDoenca || "";
+    $("possuiLaudo").value = d.PossuiLaudo || "";
+    $("tempoLaudo").value = d.TempoLaudo || "";
+    $("vaiPagarLaudo").value = d.VaiPagarLaudo || "";
+    $("qualidadeSegurado").value = d.QualidadeSegurado || "";
+    $("estaTrabalhando").value = d.EstaTrabalhando || "";
+    $("assinaturaARogo").value = d.AssinaturaARogo || "NÃO";
+
+    // benefícios
+    document.querySelectorAll('[id^="benefCard_"]').forEach(x=>x.remove());
+    beneficioCount = 0;
+
+    const benefs = String(d.Beneficios || "").split("|").map(x=>x.trim()).filter(Boolean);
+    if(benefs.length){
+      benefs.slice(0,3).forEach(b=>adicionarBeneficio(b));
+    } else {
+      adicionarBeneficio("");
+    }
+
+    atualizarMaternidadeVisivel();
+    renderDataFinal();
+    window.scrollTo({top: document.body.scrollHeight/3, behavior:'smooth'});
+  }
+  window.preencherFormulario = preencherFormulario;
+
+  function mostrarEditorResultado(d){
+    const box = $("editorResultado");
+    box.classList.remove("hidden");
+    box.innerHTML = `
+      <h3>Editar diretamente no resultado</h3>
+      <div class="row">
+        <div>
+          <label>NOME</label>
+          <input id="ed_nome" value="${d.Nome||""}">
+        </div>
+        <div>
+          <label>CPF</label>
+          <input id="ed_cpf" value="${d.CPF||""}">
+        </div>
+      </div>
+      <div class="row3">
+        <div>
+          <label>DATA DE NASCIMENTO</label>
+          <input id="ed_dn" type="date" value="${d.DataNascimentoISO||""}">
+        </div>
+        <div>
+          <label>ACESSO GOV</label>
+          <input id="ed_gov" value="${d.AcessoGOV||""}">
+        </div>
+        <div>
+          <label>TELEFONE</label>
+          <input id="ed_tel" value="${d.Telefone||""}">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>DATA DE PERÍCIA</label>
+          <input id="ed_pericia" type="date" value="${d.DataPericiaISO||""}">
+        </div>
+        <div>
+          <label>DATA DO PARTO</label>
+          <input id="ed_parto" type="date" value="${d.DataPartoISO||""}">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>SITUAÇÃO</label>
+          <input id="ed_sit" value="${d.SituacaoCaso||""}">
+        </div>
+        <div>
+          <label>PRÓXIMA AÇÃO</label>
+          <input id="ed_pa" value="${d.ProximaAcao||""}">
+        </div>
+      </div>
+      <div>
+        <label>PRAZO</label>
+        <input id="ed_prazo" type="date" value="${d.PrazoISO||""}">
+      </div>
+      <button type="button" class="smallbtn" onclick="salvarEdicaoDireta()">SALVAR EDIÇÃO</button>
+      <div id="ed_status" class="muted"></div>
+    `;
+  }
+  window.mostrarEditorResultado = mostrarEditorResultado;
+
+  async function salvarEdicaoDireta(){
+    const payload = {
+      token: TOKEN,
+      apenasCadastro: true,
+
+      clienteNome: ($("ed_nome").value||"").trim(),
+      clienteCpf: onlyDigits(($("ed_cpf").value||"").trim()),
+      clienteDataNascimentoISO: ($("ed_dn").value||"").trim(),
+      govAcesso: ($("ed_gov").value||"").trim(),
+      clienteTelefone: ($("ed_tel").value||"").trim(),
+      clienteEndereco: ($("clienteEndereco").value||"").trim() || "NÃO INFORMADO",
+      clienteUF: ($("clienteUF").value||"").trim() || "MT",
+      clienteNacionalidade: ($("clienteNacionalidade").value||"").trim() || "Brasileira",
+
+      beneficio: beneficiosSelecionados()[0]?.beneficio || "A DEFINIR",
+      beneficios: beneficiosSelecionados().map(x=>x.beneficio),
+      honorariosItens: montarHonorariosItens(),
+
+      situacaoCaso: ($("ed_sit").value||"").trim(),
+      proximaAcao: ($("ed_pa").value||"").trim(),
+      prazoISO: ($("ed_prazo").value||"").trim(),
+      ultimaMovimentacaoISO: todayISO(),
+
+      dataPericiaISO: ($("ed_pericia").value||"").trim(),
+      dataPartoISO: ($("ed_parto").value||"").trim()
+    };
+
+    try{
+      await fetch(WEBAPP_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      $("ed_status").textContent = "✅ Edição salva.";
+    } catch(err){
+      $("ed_status").textContent = "Erro ao salvar.";
+    }
+  }
+  window.salvarEdicaoDireta = salvarEdicaoDireta;
 
   async function painel(action){
     $("painelBox").style.display = "block";
     $("painelBox").innerHTML = "Carregando...";
 
     const cbName = "cb_" + Math.random().toString(36).slice(2);
-    const url = `${WEBAPP_URL}?action=${encodeURIComponent(action)}&callback=${encodeURIComponent(cbName)}`;
+    const extra = action === "agenda_dia" ? `&data=${encodeURIComponent(todayISO())}` : "";
+    const url = `${WEBAPP_URL}?action=${encodeURIComponent(action)}${extra}&callback=${encodeURIComponent(cbName)}`;
 
     try{
       const r = await jsonp(url, cbName);
@@ -598,7 +979,7 @@
           <div style="margin-bottom:10px">
             <div class="pill">${it.Flags||""}</div>
             <div><span class="k">${it.Nome}</span> — CPF ${it.CPF}</div>
-            <div class="muted">${it.Beneficio||""} | ${it.Situacao||""}</div>
+            <div class="muted">${it.Beneficios||""} | ${it.Situacao||""}</div>
             <div class="muted">Últ. mov.: ${it.UltimaMovimentacaoISO||""} | Prazo: ${it.PrazoISO||""}</div>
             <div class="muted">Próxima ação: ${it.ProximaAcao||""}</div>
           </div>
@@ -606,56 +987,119 @@
         return;
       }
 
-      if(action==="pericias"){
-        $("painelBox").innerHTML = items.map(it=>`
+      if(action==="agenda_dia"){
+        $("painelBox").innerHTML = items.map(it => `
           <div style="margin-bottom:10px">
-            <div class="pill">PERÍCIA</div>
-            <div class="k">${it.Data} — ${it.Nome}</div>
-            <div class="muted">CPF ${it.CPF} | ${it.Beneficio||""} | ${it.Situacao||""}</div>
+            <div class="pill">${it.Tipo||""}</div>
+            <div class="k">${it.Hora||""} ${it.NomeReferencia||""}</div>
+            <div class="muted">CPF: ${it.CPF||""} | Clínica: ${it.Clinica||""} | Especialidade: ${it.Especialidade||""}</div>
+            <div class="muted">${it.Observacao||""}</div>
           </div>
         `).join("");
         return;
       }
-
-      if(action==="maternidades"){
-        $("painelBox").innerHTML = items.map(it=>`
-          <div style="margin-bottom:10px">
-            <div class="pill">MATERNIDADE</div>
-            <div class="k">${it.Nome}</div>
-            <div class="muted">Parto: ${it.DataPartoISO||""} | Final: ${it.DataFinalBeneficioISO||""}</div>
-            <div class="muted">CPF ${it.CPF} | ${it.Situacao||""}</div>
-          </div>
-        `).join("");
-        return;
-      }
-
-      if(action==="listar"){
-        $("painelBox").innerHTML = items.map(it=>`
-          <div style="margin-bottom:10px">
-            <div class="k">${it.Nome}</div>
-            <div class="muted">CPF ${it.CPF} | ${it.Beneficio||""} | ${it.Situacao||""}</div>
-            <div class="muted">Últ. mov.: ${it.UltimaMov||""}</div>
-          </div>
-        `).join("");
-        return;
-      }
-
-      $("painelBox").innerHTML = JSON.stringify(items,null,2);
-
     } catch(err){
       $("painelBox").innerHTML = "Erro: " + (err.message || err);
     }
   }
 
+  async function atualizarLembretes(){
+    $("lembretesBox").style.display = "block";
+    $("lembretesBox").innerHTML = "Carregando...";
+
+    const cbName = "cb_" + Math.random().toString(36).slice(2);
+    const url = `${WEBAPP_URL}?action=lembretes&callback=${encodeURIComponent(cbName)}`;
+
+    try{
+      const r = await jsonp(url, cbName);
+      if(!r || !r.ok){
+        $("lembretesBox").innerHTML = "Erro ao carregar lembretes.";
+        return;
+      }
+
+      let html = "";
+      const agenda = r.agenda || [];
+      const pericias = r.pericias || [];
+      const prazos = r.prazos || [];
+
+      if(!agenda.length && !pericias.length && !prazos.length){
+        $("lembretesBox").innerHTML = "✅ Nada agendado para hoje.";
+        return;
+      }
+
+      if(agenda.length){
+        html += `<div class="k">AGENDAMENTOS DE HOJE</div>`;
+        html += agenda.map(it=>`<div class="muted">${it.Hora||""} ${it.NomeReferencia||""} - ${it.Clinica||""} ${it.Especialidade||""}</div>`).join("");
+        html += `<hr>`;
+      }
+
+      if(pericias.length){
+        html += `<div class="k">PERÍCIAS DE HOJE</div>`;
+        html += pericias.map(it=>`<div class="muted">${it.Nome} - ${it.Beneficios}</div>`).join("");
+        html += `<hr>`;
+      }
+
+      if(prazos.length){
+        html += `<div class="k">PRAZOS DE HOJE</div>`;
+        html += prazos.map(it=>`<div class="muted">${it.Nome} - ${it.Beneficios}</div>`).join("");
+      }
+
+      $("lembretesBox").innerHTML = html;
+    } catch(err){
+      $("lembretesBox").innerHTML = "Erro: " + (err.message || err);
+    }
+  }
+
+  async function salvarAgenda(){
+    try{
+      const payload = {
+        token: TOKEN,
+        action: "agenda_create",
+        dataISO: valReq("agendaDataISO","Data do agendamento"),
+        hora: ($("agendaHora").value||"").trim(),
+        tipo: ($("agendaTipo").value||"").trim(),
+        cpf: ($("agendaCpf").value||"").trim(),
+        nomeReferencia: ($("agendaNome").value||"").trim(),
+        clinica: ($("agendaClinica").value||"").trim(),
+        especialidade: ($("agendaEspecialidade").value||"").trim(),
+        observacao: ($("agendaObs").value||"").trim()
+      };
+
+      const res = await fetch(WEBAPP_URL, {
+        method: "POST",
+        headers: {"Content-Type":"text/plain;charset=utf-8"},
+        body: JSON.stringify(payload)
+      });
+      const j = await res.json();
+      if(!j || !j.ok){
+        setAgendaStatus("Erro ao salvar agendamento.", false);
+        return;
+      }
+      setAgendaStatus("✅ Agendamento salvo.", true);
+      atualizarLembretes();
+    } catch(err){
+      setAgendaStatus("Erro: " + (err.message || err), false);
+    }
+  }
+
+  function atualizarTipoAgenda(){
+    const tipo = ($("agendaTipo").value||"").trim();
+    $("agendaConsultaCampos").style.display = tipo === "CONSULTA" ? "block" : "none";
+  }
+
   async function gerarChecklist(){
-    const beneficio = ($("beneficio").value||"").trim();
-    if(!beneficio){ alert("Selecione o benefício primeiro."); return; }
+    const benefs = beneficiosSelecionados();
+    const primeiro = benefs[0]?.beneficio || "";
+    if(!primeiro){
+      alert("Selecione pelo menos 1 benefício primeiro.");
+      return;
+    }
 
     $("checklistBox").style.display = "block";
     $("checklistBox").innerHTML = "Gerando checklist...";
 
     const cbName = "cb_" + Math.random().toString(36).slice(2);
-    const url = `${WEBAPP_URL}?action=checklist&beneficio=${encodeURIComponent(beneficio)}&callback=${encodeURIComponent(cbName)}`;
+    const url = `${WEBAPP_URL}?action=checklist&beneficio=${encodeURIComponent(primeiro)}&callback=${encodeURIComponent(cbName)}`;
 
     try{
       const r = await jsonp(url, cbName);
@@ -689,17 +1133,25 @@
     try{
       const cpf = onlyDigits(($("clienteCpf").value||"").trim());
       const nome = ($("clienteNome").value||"").trim();
-      const beneficio = ($("beneficio").value||"").trim();
+      const beneficio = beneficiosSelecionados()[0]?.beneficio || "";
 
-      if(!cpf || !nome){ alert("Preencha Nome e CPF do cliente antes de anexar."); return; }
-      if(!beneficio){ alert("Selecione o benefício antes de anexar."); return; }
+      if(!cpf || !nome){
+        alert("Preencha Nome e CPF do cliente antes de anexar.");
+        return;
+      }
+      if(!beneficio){
+        alert("Selecione um benefício antes de anexar.");
+        return;
+      }
 
       const input = document.getElementById(`file_${idx}`);
       const file = input.files && input.files[0];
-      if(!file){ alert("Selecione um arquivo."); return; }
+      if(!file){
+        alert("Selecione um arquivo.");
+        return;
+      }
 
       document.getElementById(`up_${idx}`).textContent = "Enviando...";
-
       const conv = document.getElementById(`conv_${idx}`).checked;
 
       const base64 = await new Promise((resolve, reject)=>{
@@ -738,9 +1190,7 @@
         return;
       }
 
-      document.getElementById(`up_${idx}`).textContent =
-        j.pdfId ? "✅ Anexado (PDF gerado)." : "✅ Anexado.";
-
+      document.getElementById(`up_${idx}`).textContent = j.pdfId ? "✅ Anexado (PDF gerado)." : "✅ Anexado.";
     } catch(err){
       document.getElementById(`up_${idx}`).textContent = "Erro: " + (err.message || err);
     }
@@ -749,19 +1199,29 @@
 
   document.addEventListener("DOMContentLoaded", ()=>{
     $("data").value = todayISO();
-    $("beneficio").addEventListener("change", renderHonorarios);
-    $("apenasCadastro").addEventListener("change", renderHonorarios);
+    $("agendaDataISO").value = todayISO();
+
+    adicionarBeneficio("");
+
+    $("btnAddBeneficio").addEventListener("click", ()=>adicionarBeneficio(""));
     $("btnSalvar").addEventListener("click", (e)=>{ e.preventDefault(); salvar(); });
-    $("btnBuscar").addEventListener("click", buscarCpf);
     $("btnChecklist").addEventListener("click", gerarChecklist);
 
-    $("btnPendencias").addEventListener("click", ()=>painel("pendencias"));
-    $("btnPericias").addEventListener("click", ()=>painel("pericias"));
-    $("btnMaternidades").addEventListener("click", ()=>painel("maternidades"));
-    $("btnListar").addEventListener("click", ()=>painel("listar"));
+    $("btnBuscarPorCpf").addEventListener("click", buscarPorCpf);
+    $("btnBuscarPorNome").addEventListener("click", buscarPorNome);
 
+    $("btnPendencias").addEventListener("click", ()=>painel("pendencias"));
+    $("btnAgendaHoje").addEventListener("click", ()=>painel("agenda_dia"));
+    $("btnBuscarCpf").addEventListener("click", ()=>document.querySelector("h2")?.scrollIntoView({behavior:"smooth"}));
+
+    $("btnLembretes").addEventListener("click", atualizarLembretes);
+    $("btnSalvarAgenda").addEventListener("click", salvarAgenda);
+
+    $("agendaTipo").addEventListener("change", atualizarTipoAgenda);
     $("dataPartoISO").addEventListener("change", renderDataFinal);
-    renderDataFinal();
+
+    atualizarTipoAgenda();
+    atualizarLembretes();
   });
 </script>
 </body>
